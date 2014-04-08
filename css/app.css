@@ -1,0 +1,190 @@
+/** reset **/
+html {
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    border: 1px solid #BBB;
+}
+body {
+    height: calc(100% - 1.9em);
+    margin: 0;
+    padding: 0;
+    font-family: source sans;
+    font-size: 14px;
+    background-color: #F3F3F3;
+    overflow: hidden !important;
+    position: relative;
+    margin-top: 1.9em;
+    -webkit-font-smoothing: antialiased;
+    background-image: url(../img/texture/circuit-board.small.png);
+    -webkit-animation: moving-background 12s infinite linear;
+    -webkit-user-select: none;
+    cursor: default;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 300;
+    margin-top: 0;
+    color: #181919;
+    font-size: 28px;
+}
+.right-buttons > button {
+    padding: 5px 9px 2px ;
+    color: #A5A5A5;
+    box-shadow: none !important;
+    position: relative;
+    top: -5px;
+}
+.right-buttons {
+    overflow: hidden;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/** style **/
+.vertical-center {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+}
+#mod-step1 {
+    
+}
+@-webkit-keyframes moving-background {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 180px 180px;
+    }
+}
+#mod-step1 .wrap,
+#mod-step2 .wrap {
+    padding: 0 20px 20px;
+    width: 500px;
+    margin: auto;
+}
+.mod {
+    width: 100%;
+    min-height: 100%;
+    opacity: 0;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    -webkit-transition: -webkit-transform .3s, opacity .3s;
+}
+#nav {
+    -webkit-app-region: drag;
+    background-color: #EBEBEB;
+    position: absolute;
+    top: -1.9em;
+    height: 1.9em;
+    line-height: 1.9em;
+    width: 100%;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+    box-sizing: border-box;
+}
+.nav-div {
+    border-top: 1px solid #CECECE;
+    border-bottom: 1px solid #FFF; 
+    position: relative;
+    top: -2px;
+}
+#nav .band-text {
+    padding-left: 4px;
+    color: #888;
+    font-weight: bold;
+}
+#nav .right-buttons {
+    -webkit-app-region: no-drag;
+    margin-right: 3px;
+}
+.band-logo {
+    padding: 4px 0 0 5px;
+    vertical-align: top;
+    opacity: .45;
+}
+#mod-ipaddress  h1 {
+    padding: 12px 8px;
+}
+#mod-ipaddress {
+
+}
+.item-addr {
+
+}
+.list-addr {
+    overflow: hidden;
+    border-bottom: 1px solid #D6D6D6;
+}
+.item-addr > input {
+    background-color: transparent;
+    padding: 4px 8px;
+    width: 100%;
+    margin: 0;
+    border: none;
+    color: #888;
+    -webkit-transition: color .3s;
+}
+.item-addr > input:focus {
+    color: #222;
+}
+.item-addr:nth-child(odd) {
+    background-color: #E4E4E4;
+    border-top: 1px solid #D6D6D6;
+}
+.item-addr:nth-child(even) {
+    border-top: 1px solid #D6D6D6;
+    background-color: #EEE;
+}
+#mod-ipaddress h1 {
+    margin-bottom: 0;
+}
+#mod-ipaddress p {
+    padding: 0 8px 8px;
+    margin: 0 0 12px 0;
+}
+.back {
+    color: #B4B4B4;
+    margin-right: 9px;
+}
+.back:hover {
+    color: #6CC0E7;
+    cursor: pointer;
+}
+
+/** common **/
+.float-right {
+    float: right;
+}
+.clr {
+    clear: both;
+}
+.space-right {
+    margin-right: 5px;
+}
+.click-to-edit {
+    padding: 1px 4px;
+    background-color: transparent;
+    border: none;
+    border-radius: 2px;
+}
+.click-to-edit:focus {
+    border: 1px
+}
+.light .cta {
+    color:#288edf;
+}
+.selectable {
+    -webkit-user-select: text;
+    cursor: text;
+}

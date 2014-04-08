@@ -1,0 +1,15 @@
+{
+  "main": "app://linker/index.html",
+  "name": "Linker",
+  "version": "0.1",
+  "window": {
+    "title": "Linker",
+    "toolbar": false,
+    "frame": false,
+    "width": 450,
+    "height": 332,
+    "position": "center"
+  },
+  "chromium-args": "--enable-threaded-compositing",
+  "js-flags": "--harmony"
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html ng-app="Linker">
+<head>
+    <link rel="stylesheet" href="css/topcoat.css" />
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/angular/angular.js"></script>
+</head>
+<body ng-controller="GlobalCtrl" class="light">
+    <section id="nav" ng-controller="NavCtrl">
+        <img class="band-logo" src="img/icon/logo.svg" alt="" width="16" height="16" /><span class="band-text">Linker</span>
+        <div class="float-right right-buttons">
+            <button class="topcoat-button fa fa-power-off" ng-click="exit()"></button>
+        </div>
+    </section>
+    <div class="nav-div"></div>
+    <section id="mod-step1" class="mod vertical-center" ng-controller="Step1Ctrl">
+        <div class="wrap">
+            <h1>Welcome to Linker!</h1>
+            <p>To get started you need to select a root directory to sync with all your linkers.</p>
+            <div class="clr"></div>
+            <button class="float-right topcoat-button--cta" ng-click="selectFolder()">Select Folder</button>
+        </div>
+    </section>
+    <section id="mod-step2" class="mod vertical-center" ng-controller="Step2Ctrl">
+        <div class="wrap">
+            <h1><i class="back fa fa-angle-left" ng-click="back()"></i>I'm running!</h1>
+            <p>The following folder will be synced with all your other devices: <br /><em ng-bind-template="{{syncFolder}}"></em><br /> If you don't have internet access you can manually add IP addresses of other devices.</p>
+            <br />
+            <button class="float-right topcoat-button--cta" ng-click="minimizeToTaskbar()">Minimize to taskbar</button>
+            <button class="float-right topcoat-button space-right" ng-click="addIPAddress()">Add IP addresses</button>
+        </div>
+    </section>
+    <section id="mod-ipaddress" class="mod" ng-controller="IpaddressCtrl">
+        <div class="wrap">
+            <h1>
+                <i class="back fa fa-angle-left" ng-click="back()"></i>Linker Address
+                <button class="float-right topcoat-button topcoat-button--cta" ng-click="save()">Save</button>
+                <button class="float-right space-right topcoat-button" ng-click="addItem()">Add</button>
+            </h1>
+            <p><span class="cta">IP addresses of this device </span> <span class="selectable" ng-bind-template="{{localAddr | join:'; '}}"></span></p>
+            <ul class="list-addr">
+                <li class="item-addr" ng-repeat="item in addresses track by $index"><input type="test" ng-model="addresses[$index]" /></li>
+            </ul>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="js/angular/HashManager.js"></script>
+    <script type="text/javascript" src="js/angular/services.js"></script>
+    <script type="text/javascript" src="js/angular/filters.js"></script>
+    <script type="text/javascript" src="js/angular/controllers.js"></script>
+    <script type="text/javascript" src="js/angular/filedialog.js"></script>
+    <script type="text/javascript" src="js/angular/app.js"></script>
+</body>
+</html>

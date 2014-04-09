@@ -182,6 +182,7 @@ exports.createClients = function (clients, addr) {
     for (var i = 0, len = keys.length; i < len; i++) {
         var val = addr[keys[i]];
         if (typeof val === 'string') {
+            if (val.trim() === '127.0.0.1') continue;
             // device address
             if ('device:/' + val in clients) continue;
             var c = linker.createClient(val);
@@ -194,4 +195,4 @@ exports.createClients = function (clients, addr) {
             clients[val.uid] = c;
         }
     }
-}
+};

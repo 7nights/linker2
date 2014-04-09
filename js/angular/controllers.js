@@ -53,8 +53,6 @@ angular.module('Linker.controllers', []).
           location.hash = 'step2';
           storage.set('syncFolder', path.path);
 
-          alert(path.path);
-          alert(JSON.stringify(path));
           $scope.$parent.syncFolder = path.path;
           $scope.$parent.$digest();
         });

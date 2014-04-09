@@ -2,7 +2,7 @@
 var fs = require('fs');
 var config = {
     method: 'localStorage',
-    namespace: 'settings'
+    namespace: 'settingsStorage'
 };
 
 var modified = {};
@@ -12,10 +12,11 @@ exports.get = function (key, _default) {
     if (config.method === 'localStorage') {
         try {
             window.localStorage;
+            if (!localStorage[config.namespace]) localStorage[config.namespace] = '{}';
         } catch (e) {
             return _default !== undefined ? _default : null;
         }
-        return JSON.parse(localStorage[config.namespace])[key];
+        return JSON.parse(localStorage[config.namespace])[key] || _default;
     } else if (config.method === 'file') {
         if (!cache || key in modified) {
             cache = JSON.parse(fs.readFileSync(config.storagePath, {encoding: 'utf8'}));

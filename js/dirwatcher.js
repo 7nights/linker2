@@ -242,25 +242,37 @@ function *compare(list1, list2, recordRemove, path) {
     }
 
     if (str.length > 0) yield fs.appendFile(path + '/.linker/removeList', str);
-    return [];
   }
 
+  var getObj = function (key, value) {
+    var obj = {};
+    obj[key] = value;
+    return obj;
+  };
   for (var key in list1Map) {
+    if (require('path').relative(key, path) === '') {
+      delete list2Map[key];
+      continue;
+    }
+    else console.log(key, '$');
     if (!(key in list2Map)) {
-      rlt1.push({key: '-' + list1Map[key]}); // clients ignore '-'
-      rlt2.push({key: '+' + list1Map[key]});
+      rlt1.push(getObj(key, '-' + list1Map[key])); // clients ignore '-'
+      rlt2.push(getObj(key, '+' + list1Map[key]));
     } else if (list1Map[key] > list2Map[key]) {
       delete list2Map[key];
-      rlt2.push({key: '~' + list1Map[key]});
+      rlt2.push(getObj(key, '~' + list1Map[key]));
     } else if (list1Map[key] < list2Map[key]) {
+      rlt1.push(getObj(key, '~' + list2Map[key]));
       delete list2Map[key];
-      rlt1.push({key: '~' + list2Map[key]});
+    } else {
+      delete list2Map[key];
     }
   }
   for (key in list2Map) {
-    rlt1.push({key: '+' + list2Map[key]});
-    rlt2.push({key: '-' + list2Map[key]});
+    rlt1.push(getObj(key, '+' + list2Map[key]));
+    rlt2.push(getObj(key, '-' + list2Map[key]));
   }
+
   return [rlt1, rlt2];
 }
 
@@ -304,6 +316,8 @@ function watch(path, onChangeCallback, onInitialized) {
           ret = null;
 
         var diff = yield compare(oldList, newList, true, path);
+        console.log(diff, newList);
+
         yield fs.writeFile(require('path').join(path, '.linker', 'fileList'), JSON.stringify(newList));
         if (Object.keys(diff[0]).length > 0 || Object.keys(diff[1]).length > 0) typeof onChangeCallback === 'function' && onChangeCallback(diff);
       })();

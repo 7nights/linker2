@@ -66,7 +66,8 @@ ul {
     }
 }
 #mod-step1 .wrap,
-#mod-step2 .wrap {
+#mod-step2 .wrap,
+#mod-createSecret .wrap {
     padding: 0 20px 20px;
     width: 500px;
     margin: auto;
@@ -120,7 +121,7 @@ ul {
 
 }
 .item-addr {
-
+    position: relative;
 }
 .list-addr {
     overflow: hidden;
@@ -128,7 +129,7 @@ ul {
 }
 .item-addr > input {
     background-color: transparent;
-    padding: 4px 8px;
+    padding: 4px 20px;
     width: 100%;
     margin: 0;
     border: none;
@@ -160,6 +161,38 @@ ul {
 .back:hover {
     color: #6CC0E7;
     cursor: pointer;
+}
+.item-addr .status {
+    line-height: 25px;
+    position: absolute;
+    left: 5px;
+    top: 1px;
+}
+.item-addr .fa-exclamation-circle {
+    color: #D34C4C;
+}
+.item-addr .actions {
+    font-size: 12px;
+    position: absolute;
+    right: 2px;
+    line-height: 25px;
+    top: 0;
+    opacity: 0;
+    transition: .3s opacity;
+    color: #555;
+}
+.item-addr:hover .actions {
+    opacity: 1;
+}
+.item-addr .actions > span {
+    background-color: #D6D6D6;
+    padding: 0 2px;
+    border-radius: 2px;
+    margin-right: 5px;
+}
+.item-addr .actions > span:hover {
+    color: #000;
+    background-color: #D8D8D8;
 }
 
 /** common **/

@@ -346,6 +346,7 @@ function lClient() {
       console.log('lClient connected to ' + host + ':' + port);
       s.toId = 0;
       s.fromId = 0;
+      s.lastError;
       var packageBuffer = new NiceBuffer;
       packageBuffer.state = packageWaitForHeader;
       initLinkerSocket(s, action);
@@ -362,6 +363,7 @@ function lClient() {
     s.on('error', function (err) {
       console.error(err);
       console.trace(err);
+      this.lastError = err;
     });
 
     // client methods

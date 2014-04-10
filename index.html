@@ -15,6 +15,13 @@
         </div>
     </section>
     <div class="nav-div"></div>
+    <section id="mod-createSecret" class="mod vertical-center" ng-controller="CreateSecretCtrl">
+        <div class="wrap">
+            <h1>Create Secret</h1>
+            <p>To get started, you need to create a cipher. Linkers with the same cipher can communicate with others, so you should ensure you are using the same cipher on all your Linker devices.</p>
+            <p><input type="password" ng-model="password" class="topcoat-text-input space-right" placeholder="Incantation..." /><button class="topcoat-button--cta" ng-click="createSecret()">Create</button></p>
+        </div>
+    </section>
     <section id="mod-step1" class="mod vertical-center" ng-controller="Step1Ctrl">
         <div class="wrap">
             <h1>Welcome to Linker!</h1>
@@ -41,7 +48,7 @@
             </h1>
             <p><span class="cta">IP addresses of this device </span> <span class="selectable" ng-bind-template="{{localAddr | join:'; '}}"></span></p>
             <ul class="list-addr">
-                <li class="item-addr" ng-repeat="item in addresses track by $index"><input type="test" ng-model="addresses[$index]" /></li>
+                <li class="item-addr" ng-repeat="item in addresses track by $index"><span class="status"><i class="fa" ng-class="{'fa-exclamation-circle': !ifSuccess($index), 'fa-check-circle': ifSuccess($index) }"></i></span><input type="test" ng-model="addresses[$index]" /><span class="actions"><span>Reconnect</span><span>Remove</span></span></li>
             </ul>
         </div>
     </section>

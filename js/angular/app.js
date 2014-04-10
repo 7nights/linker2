@@ -10,7 +10,7 @@ angular.module('Linker', [
   'Linker.filters'
 ]).
   run( ['HashManager', 'ModManager', function (hashManager, modManager) {
-    modManager.initMod = 'step1';
+    modManager.initMod = 'createSecret';
     hashManager
       .addListener('step1', function () {
         modManager.enter('step1');
@@ -18,7 +18,11 @@ angular.module('Linker', [
       .addListener('step2', function () {
         modManager.enter('step2');
       })
+      .addListener('createSecret', function () {
+        modManager.enter('createSecret');
+      })
       .addListener('ipaddress', function () {
         modManager.enter('ipaddress');
       });
   }]);
+

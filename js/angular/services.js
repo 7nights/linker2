@@ -6,6 +6,18 @@
 // Demonstrate how to register services
 // In this case it is a simple value service.
 angular.module('Linker.services', []).
+  factory('sharedObject', function () {
+    var objs = {};
+    return {
+      get: function (key) {
+        if (!(key in objs)) objs[key] = {};
+        return objs[key];
+      },
+      define: function (key, value) {
+        objs[key] = value;
+      }
+    };
+  }).
   provider('storage', function () {
     this.namespace = 'settings';
     var _method, self = this, listeners = [];

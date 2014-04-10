@@ -182,19 +182,26 @@ exports.handleChange= function () {
 
 };
 
-exports.createClients = function (clients, addr) {
+exports.createClients = function (clients, addr, force) {
+
     var keys = Object.keys(addr);
     for (var i = 0, len = keys.length; i < len; i++) {
         var val = addr[keys[i]];
         if (typeof val === 'string') {
             if (val.trim() === '127.0.0.1') continue;
             // device address
-            if ('device:/' + val in clients) continue;
+            if ('device:/' + val in clients) {
+                if (force) clients['device:/' + val].end();
+                else continue;
+            }
             var c = linker.createClient(val);
             clients['device:/' + val] = c;
         } else {
-            // addr from server
-            if (val.uid in clients) continue;
+            // addr(client) from server
+            if (val.uid in clients) {
+                if (force) clients[val.uid].end();
+                else continue;
+            }
             if (Date.now() - val.last > 60 * 10 * 1000) continue; // expired
             var c = linker.createClient(val.ip);
             clients[val.uid] = c;

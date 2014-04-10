@@ -19,20 +19,26 @@ angular.module('Linker.controllers', []).
       }
       return result.join('');
     }
-    if (!storage.get('appInitialized', false)) {
-      // read config
-      var config = require('./js/config.json');
-      // generate uid
-      config.uid === '' && (config.uid = getRandomStr(16));
-      require('fs').writeFileSync('./js/config.json', JSON.stringify(config));
-      location.hash = 'step1';
-      storage.set('appInitialized', true);
-    } else if ($scope.syncFolder === ''){
-      // the sync folder has not been set
-      location.hash = 'step1';
-    } else {
-      location.hash = 'step2';
-    }
+
+    setTimeout(function () {
+
+      if (!storage.get('appInitialized', false)) {
+        // read config
+        var config = require('./js/config.json');
+        // generate uid
+        config.uid === '' && (config.uid = getRandomStr(16));
+        require('fs').writeFileSync('./js/config.json', JSON.stringify(config));
+        location.hash = 'step1';
+        storage.set('appInitialized', true);
+      } else if (storage.get('password', '') === '') {
+        location.hash = 'createSecret';
+      } else if ($scope.syncFolder === '') {
+        // the sync folder has not been set
+        location.hash = 'step1';
+      } else {
+        location.hash = 'step2';
+      }
+    }, 200);
 
     // events
     $scope.exit = function () {
@@ -48,6 +54,15 @@ angular.module('Linker.controllers', []).
   .controller('NavCtrl', ['$scope', function ($scope) {
 
   }])
+  .controller('CreateSecretCtrl', ['$scope', 'storage', function ($scope, storage) {
+
+    // events
+    $scope.createSecret = function () {
+      storage.set('password', require('./js/utils').md5($scope.password, 'hex'));
+      if (storage.get('syncFolder', '') === '') return location.hash = 'step1';
+      else return location.hash = 'step2';
+    };
+  }])
   .controller('Step1Ctrl', ['$scope', 'fileDialog', 'ModManager', 'storage', function ($scope, fileDialog, modManager, storage) {
 
     // events
@@ -62,21 +77,22 @@ angular.module('Linker.controllers', []).
         });
     };
   }])
-  .controller('Step2Ctrl', ['$scope', '$rootScope', 'windowManager', 'ModManager', 'storage', function ($scope, $rootScope, windowManager, modManager, storage) {
+  .controller('Step2Ctrl', ['$scope', '$rootScope', 'windowManager', 'ModManager', 'storage', 'sharedObject', function ($scope, $rootScope, windowManager, modManager, storage, sharedObject) {
     // initialize
     var 
       linker      = require('./js/core'),
       syncHandler = require('./js/synchandler'),
       utils       = require('./js/utils'),
       server      = linker.createServer(),
-      clients     = {},
+      clients     = sharedObject.get('clients'),
       hasSignedIn = false;
 
-    (function() {
+    // functions
+    function loadClientsFromLocalList() {
       // load device address records
       var addr = storage.get('devicesaddr', []);
       if (addr.length > 0) syncHandler.createClients(clients, addr);
-    })();
+    };
 
     // events
     $scope.minimizeToTaskbar = function () {
@@ -117,6 +133,8 @@ angular.module('Linker.controllers', []).
         syncHandler.handleChange(clients, diff);
       });
 
+      loadClientsFromLocalList();
+
       setInterval(function () {
         syncHandler.signIn(clients);
       }, 1000 * 60 * 10);
@@ -126,7 +144,7 @@ angular.module('Linker.controllers', []).
       window.location.hash = "ipaddress";
     };
   }])
-  .controller('IpaddressCtrl', ['$scope', 'storage', function ($scope, storage) {
+  .controller('IpaddressCtrl', ['$scope', 'storage', 'sharedObject', function ($scope, storage, sharedObject) {
     // initialize
     $scope.addresses = storage.get('devicesaddr', ['']);
     
@@ -154,6 +172,10 @@ angular.module('Linker.controllers', []).
     $scope.save = function () {
       storage.set('devicesaddr', removeEmpty($scope.addresses));
       $scope.$emit('Step2Ctrl.minimizeToTaskbar');
+    };
+    $scope.ifSuccess = function (index) {
+      
+      return sharedObject.get('clients')[index] && !sharedObject.get('clients')[index].lastError;
     };
 
   }]);

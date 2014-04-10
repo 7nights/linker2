@@ -7,7 +7,7 @@ var
     net         = require('net'),
     networks    = require('os').networkInterfaces,
     PackageHead = require('./linkerpackage').PackageHead,
-    syncHandler = require('./syncHandler'),
+    syncHandler = require('./synchandler'),
     PTYPES      = require('./ptypes');
 
 /**

@@ -8,7 +8,7 @@ angular.module('Linker.controllers', []).
   controller('GlobalCtrl', ['$scope', 'storage', 'fileDialog', 'ModManager', 'windowManager', function($scope, storage, fileDialog, modManager, windowManager) {
     require('nw.gui').Window.get().showDevTools();
     // vars
-    $scope.syncFolder = '';
+    $scope.syncFolder = storage.get('syncFolder', '');
 
     // init application
     function getRandomStr(len) {
@@ -26,7 +26,8 @@ angular.module('Linker.controllers', []).
       config.uid === '' && (config.uid = getRandomStr(16));
       require('fs').writeFileSync('./js/config.json', JSON.stringify(config));
       location.hash = 'step1';
-    } else if (storage.get('syncFolder', false) === false){
+      storage.set('appInitialized', true);
+    } else if ($scope.syncFolder === ''){
       // the sync folder has not been set
       location.hash = 'step1';
     } else {
@@ -39,6 +40,9 @@ angular.module('Linker.controllers', []).
     };
     $scope.back = function () {
       history.back();
+    };
+    $scope.jump = function (hash) {
+      location.hash = hash;
     };
   }])
   .controller('NavCtrl', ['$scope', function ($scope) {

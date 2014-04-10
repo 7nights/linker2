@@ -84,7 +84,7 @@ ul {
 }
 #nav {
     -webkit-app-region: drag;
-    background-color: #EBEBEB;
+    background-color: #F9F9F9;
     position: absolute;
     top: -1.9em;
     height: 1.9em;

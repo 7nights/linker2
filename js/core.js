@@ -178,6 +178,7 @@ function packageWaitForHeader(s) {
         co(function *() {
           var head = s.linker.currentHead;
           yield waitForDeliverable(s.linker.currentHead.type, s);
+          // in this case, package.body is the path of the file
           yield s.linker.pqueue.put(new Package(head, p.writeablePath));
           p.state = packageWaitForHeader;
           p.state(s);
@@ -357,6 +358,10 @@ function lClient() {
       });
 
       handleState(s, lstate.initConnection);
+    });
+    s.on('error', function (err) {
+      console.error(err);
+      console.trace(err);
     });
 
     // client methods

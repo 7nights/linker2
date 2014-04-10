@@ -133,6 +133,8 @@ exports.handleDownloadedFile = function (s, fileName) {
         var fs = require('fs');
         var rs = fs.createReadStream(fileName), mtime;
         rs.on('readable', function fn() {
+            /* the first 64 bytes is the mtime of the file
+             */
             mtime = rs.read(64);
             if (mtime === null) return;
             rs.removeListener('readable', fn);
@@ -144,6 +146,9 @@ exports.handleDownloadedFile = function (s, fileName) {
             } catch (e) {}
             if (oriMtime < mtime) {
                 var stat = fs.statSync(s.linker.downloadTo);
+                /* simply rewrite the file if downloaded file is newer than the local one.
+                 * TODO: file backup should be done here
+                 */
                 var ws = fs.createWriteStream(s.linker.downloadTo);
                 ws.on('finish', function () {
                     fs.unlink(fileName);

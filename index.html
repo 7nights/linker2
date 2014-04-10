@@ -25,8 +25,8 @@
     </section>
     <section id="mod-step2" class="mod vertical-center" ng-controller="Step2Ctrl">
         <div class="wrap">
-            <h1><i class="back fa fa-angle-left" ng-click="back()"></i>I'm running!</h1>
-            <p>The following folder will be synced with all your other devices: <br /><em ng-bind-template="{{syncFolder}}"></em><br /> If you don't have internet access you can manually add IP addresses of other devices.</p>
+            <h1><i class="back fa fa-angle-left" ng-click="jump('step1')"></i>I'm running!</h1>
+            <p>The following folder will be synced with all your other devices: <br /><em class="cta" ng-bind-template="{{syncFolder}}"></em><br /> If you don't have internet access you can manually add IP addresses of other devices.</p>
             <br />
             <button class="float-right topcoat-button--cta" ng-click="minimizeToTaskbar()">Minimize to taskbar</button>
             <button class="float-right topcoat-button space-right" ng-click="addIPAddress()">Add IP addresses</button>

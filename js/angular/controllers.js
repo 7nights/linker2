@@ -181,6 +181,15 @@ angular.module('Linker.controllers', []).
     $scope.reconnect = function (addr) {
       syncHandler.createClients(sharedObject.get('clients'), [addr], true);
     };
+    $scope.getStatus = function (addr) {
+      addr = 'device:/' + addr;
+      debugger;
+      if (sharedObject.get('clients')[addr]) {
+
+        return sharedObject.get('clients')[addr].lstate.name;
+      }
+      return '';
+    };
 
   }]);
 })();

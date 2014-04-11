@@ -1,5 +1,5 @@
 var
-    co         = require('co'),
+    co          = require('co'),
     fs          = require('co-fs'),
     path        = require('path'),
     int64       = require('node-int64'),
@@ -7,6 +7,7 @@ var
     PackageHead = require('./linkerpackage').PackageHead,
     dirWatcher  = require('./dirwatcher'),
     crypto      = require('crypto'),
+    PTYPES      = require('./ptypes'),
     linker      = require('./core');
 
 function *renameFile(oldName, newName, mtime) {

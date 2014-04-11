@@ -43,7 +43,7 @@ function getIPlist() {
     return address;
 }
 
-exports.prepareForPing = function *(sessionBuf, callback) {
+exports.prepareForPing = function *prepareForPing(sessionBuf, callback) {
     var pkg = yield this.linker.pqueue.get();
     if (pkg.head.type !== PTYPES.HANDSHAKE_INIT_VARS) {
         if (!callback.called) {
@@ -74,7 +74,7 @@ exports.prepareForPing = function *(sessionBuf, callback) {
 };
 exports.prepareForPing.packageType = [PTYPES.HANDSHAKE_INIT_VARS, PTYPES.ECHO];
 
-exports.initConnection = function *() {
+exports.initConnection = function *initConnection() {
     var pkg = yield this.linker.pqueue.get();
 
     var hmac = crypto.createHmac('md5', settings.get('password', ''));
@@ -91,7 +91,7 @@ exports.initConnection = function *() {
 exports.initConnection.packageType = [PTYPES.HANDSHAKE_INIT_VARS];
 
 // wait for handshake or ping request
-exports.waitForHandshake = function *() {
+exports.waitForHandshake = function *waitForHandshake() {
     var pkg = yield this.linker.pqueue.get();
 
     if (pkg.head.type === PTYPES.PING) {
@@ -125,7 +125,7 @@ exports.waitForHandshake = function *() {
 };
 exports.waitForHandshake.packageType = [PTYPES.HANDSHAKE_REQUEST, PTYPES.PING];
 
-exports.waitForHandshakeResponse = function *() {
+exports.waitForHandshakeResponse = function *waitForHandshakeResponse() {
     var pkg = yield this.linker.pqueue.get();
     console.log('get handleshake response');
 
@@ -154,7 +154,7 @@ exports.download = function *() {
     changeState(this, this.lstate, exports.handleDownloadResponse);
 };
 
-exports.initSync = function *() {
+exports.initSync = function *initSync() {
     // check if ip list was cached
     if (!this.linker.iplist) {
         return changeState(this, this.lstate, exports.requestIPList);
@@ -163,7 +163,7 @@ exports.initSync = function *() {
     return changeState(this, this.lstate, exports.pingIPList);
 };
 
-exports.requestIPList = function *() {
+exports.requestIPList = function *requestIPList() {
     this.linker.writePackage(
         PackageHead.create(PTYPES.IPLIST_REQUEST, this.linker.fromId, 0, 0)
     );
@@ -220,7 +220,7 @@ function getNetworkSegment(addrs) {
 }
 exports.requestIPList.packageType = [PTYPES.IPLIST_RESPONSE];
 
-exports.pingIPList = function *() {
+exports.pingIPList = function *pingIPList() {
     this.linker.availableIpList = yield pingIpAddress(this.linker, this.linker.iplist);
 
     return changeState(this, this.lstate, exports.waitForSync);
@@ -245,7 +245,7 @@ exports.pingIPList.packageType = []; // block all comming packages
 
 // package body is JSON formatted
 // {renameList: [{oldName: ..., newName: ..., mtime: ...}, ...], list: ...}
-exports.waitForSync = function *() {
+exports.waitForSync = function *waitForSync() {
     // send sync request
     this.linker.writePackage(
         PackageHead.create(PTYPES.SYNC_REQUEST, this.linker.fromId, 0, 0)
@@ -262,7 +262,7 @@ exports.waitForSync = function *() {
 exports.waitForSync.packageType = [PTYPES.SYNC_RESPONSE];
 
 // package body is JSON formatted
-exports.handleIPListRequest = function *() {
+exports.handleIPListRequest = function *handleIPListRequest() {
     var address = getIPlist();
     // send iplist response
     var body = new Buffer(JSON.stringify(address));
@@ -273,7 +273,7 @@ exports.handleIPListRequest = function *() {
     changeState(this, this.lstate, exports.idle);
 };
 
-exports.handleDownloadResponse = function *() {
+exports.handleDownloadResponse = function *handleDownloadRequest() {
     var pkg = yield this.linker.pqueue.get();
 
     syncHandler.handleDownloadedFile(this, pkg.body);
@@ -281,7 +281,7 @@ exports.handleDownloadResponse = function *() {
 };
 exports.handleDownloadResponse.packageType = [PTYPES.DOWNLOAD_RESPONSE];
 
-exports.idle = function *() {
+exports.idle = function *idle() {
     var pkg = yield this.linker.pqueue.get();
 
     switch(pkg.head.type) {

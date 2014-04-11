@@ -181,8 +181,8 @@ exports.handleSyncRequest = function *(socket) {
             if (val === '') throw new Error('InvalidFileFormat');
             val = val.split(' ');
             return {
-                mtime: +val[0]
-                oldName: val[1]
+                mtime: +val[0],
+                oldName: val[1],
                 newName: val[2]
             };
         });

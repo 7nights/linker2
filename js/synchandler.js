@@ -199,7 +199,7 @@ exports.handleSyncRequest = function *(socket) {
         renameList = [];
     } else {
         renameList = renameList.map(function (val) {
-            if (val === '') throw new Error('InvalidFileFormat');
+            if (val === '') return '';
             val = val.split(' ');
             return {
                 mtime: +val[0],

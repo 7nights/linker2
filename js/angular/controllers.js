@@ -145,6 +145,7 @@ angular.module('Linker.controllers', []).
     };
   }])
   .controller('IpaddressCtrl', ['$scope', 'storage', 'sharedObject', function ($scope, storage, sharedObject) {
+    var syncHandler = require('./js/synchandler');
     // initialize
     $scope.addresses = storage.get('devicesaddr', ['']);
     
@@ -173,9 +174,12 @@ angular.module('Linker.controllers', []).
       storage.set('devicesaddr', removeEmpty($scope.addresses));
       $scope.$emit('Step2Ctrl.minimizeToTaskbar');
     };
-    $scope.ifSuccess = function (index) {
-      
-      return sharedObject.get('clients')[index] && !sharedObject.get('clients')[index].lastError;
+    $scope.ifSuccess = function (addr) {
+      addr = 'device:/' + addr;
+      return sharedObject.get('clients')[addr] && !sharedObject.get('clients')[addr].lastError;
+    };
+    $scope.reconnect = function (addr) {
+      syncHandler.createClients(sharedObject.get('clients'), [addr], true);
     };
 
   }]);

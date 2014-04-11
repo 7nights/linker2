@@ -48,7 +48,7 @@
             </h1>
             <p><span class="cta">IP addresses of this device </span> <span class="selectable" ng-bind-template="{{localAddr | join:'; '}}"></span></p>
             <ul class="list-addr">
-                <li class="item-addr" ng-repeat="item in addresses track by $index"><span class="status"><i class="fa" ng-class="{'fa-exclamation-circle': !ifSuccess($index), 'fa-check-circle': ifSuccess($index) }"></i></span><input type="test" ng-model="addresses[$index]" /><span class="actions"><span>Reconnect</span><span>Remove</span></span></li>
+                <li class="item-addr" ng-repeat="item in addresses track by $index" data-content="{{item}}"><span class="status"><i class="fa" ng-class="{'fa-exclamation-circle': !ifSuccess($index), 'fa-check-circle': ifSuccess(item) }"></i></span><input type="test" ng-model="addresses[$index]" /><span class="actions"><span ng-click="reconnect(item)">Reconnect</span><span>Remove</span></span></li>
             </ul>
         </div>
     </section>

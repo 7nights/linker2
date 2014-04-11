@@ -61,6 +61,8 @@ PackageHead.prototype = {
     if(this.dataLength === 0){
       return this.hash.toString('hex') == md5(Buffer.concat([helper, settings.get('password')])).toString('hex');
     }
+    console.log(this.dataLength, dataMD5);
+    window.alert(settings.get('password'));
     return this.hash.toString('hex') == md5(Buffer.concat([helper, dataMD5, settings.get('password')])).toString('hex');
   }
 };

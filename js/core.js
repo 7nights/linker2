@@ -286,6 +286,9 @@ function lServer() {
     c.on('close', function (data) {
       c.ended = true;
     });
+    c.on('error', function (data) {
+      c.ended = true;
+    });
 
     c.linker.handshakeSecret = getRandomBytes(16);
     c.linker.writePackage(PackageHead.create(PTYPES.HANDSHAKE_INIT_VARS, 0, 0, 16, md5(c.linker.handshakeSecret)), c.linker.handshakeSecret);

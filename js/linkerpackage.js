@@ -54,7 +54,8 @@ PackageHead.prototype = {
   get buffer() {
     return this.buf;
   },
-  get verify(dataMD5) {
+  verify: function (dataMD5) {
+    window.alert(dataMD5);
     var helper = new Buffer(8);
     helper.writeUInt32LE(this.fromId, 0);
     helper.writeUInt32LE(this.toId, 4);

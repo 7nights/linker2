@@ -8,11 +8,14 @@ var
     dirWatcher  = require('./dirwatcher'),
     crypto      = require('crypto'),
     PTYPES      = require('./ptypes'),
+    utils       = require('./utils'),
     linker      = require('./core');
 
 function *renameFile(oldName, newName, mtime) {
     var syncFolder = settings.get('syncFolder');
     if (!syncFolder) return;
+    console.log(oldName, newName, syncFolder);
+    debugger;
     oldName = path.join(syncFolder, oldName);
     newName = path.join(syncFolder, newName);
     var stat;
@@ -45,10 +48,12 @@ exports.handleSyncResponse = function (socket, res) {
 
     var syncFolder = settings.get('syncFolder');
     if (!syncFolder) return;
-    var ipaddr = socket.iplist[0];
+
+    var ipaddr = socket.linker.iplist[0];
     co(function *() {
         var rename = [];
         res.renameList.forEach(function (val) {
+            console.log(val);
             rename.push(renameFile(val.oldName, val.newName, val.mtime));
         });
         yield rename;
@@ -169,6 +174,19 @@ exports.handleSyncRequest = function *(socket) {
         list       = yield dirWatcher.getModified(syncFolder),
         body       = PTYPES.BODY.SYNC_RESPONSE(renameList, list);
 
+    if (renameList[0] === '') {
+        renameList = [];
+    } else {
+        renameList = renameList.map(function (val) {
+            if (val === '') throw new Error('InvalidFileFormat');
+            val = val.split(' ');
+            return {
+                mtime: +val[0]
+                oldName: val[1]
+                newName: val[2]
+            };
+        });
+    }
     socket.linker.writePackage(
         PackageHead.create(PTYPES.SYNC_RESPONSE, socket.linker.fromId, socket.linker.currentHead.fromId, body.length, utils.md5(body)),
         body

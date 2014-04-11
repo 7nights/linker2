@@ -183,8 +183,7 @@ angular.module('Linker.controllers', []).
     };
     $scope.getStatus = function (addr) {
       addr = 'device:/' + addr;
-      debugger;
-      if (sharedObject.get('clients')[addr]) {
+      if (sharedObject.get('clients')[addr] && sharedObject.get('clients')[addr].lstate) {
 
         return sharedObject.get('clients')[addr].lstate.name;
       }

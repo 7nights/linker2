@@ -9,13 +9,13 @@ var
     crypto      = require('crypto'),
     PTYPES      = require('./ptypes'),
     utils       = require('./utils'),
+    config      = require('./config')
     linker      = require('./core');
 
 function *renameFile(oldName, newName, mtime) {
     var syncFolder = settings.get('syncFolder');
     if (!syncFolder) return;
-    console.log(oldName, newName, syncFolder);
-    debugger;
+
     oldName = path.join(syncFolder, oldName);
     newName = path.join(syncFolder, newName);
     var stat;
@@ -30,6 +30,18 @@ function *renameFile(oldName, newName, mtime) {
 }
 function is(a, b) {
     return b.indexOf(a) !== -1;
+}
+function *deleteFile(name, mtime) {
+    var syncFolder = settings.get('syncFolder');
+    if (!syncFolder) return;
+    name = path.join(syncFolder, name);
+    var stat;
+    try {
+        stat = fs.stat(name);
+    } catch (e) {return;}
+    if (stat.mtime <= mtime) {
+        yield fs.unlink(name);
+    }
 }
 
 /**
@@ -46,20 +58,27 @@ exports.handleSyncResponse = function (socket, res) {
      * {Object} res.list return of dirwatcher.getModifedList()
      */
 
+
+    /**
+     * return.toDownload is a array of file names to download
+     * return.update[n] is like {type: 'download', mtime: 1999999, name: 'filename'//, newName: 'filename', oldName: 'filename2' }
+     */
+
     var syncFolder = settings.get('syncFolder');
     if (!syncFolder) return;
 
     var ipaddr = socket.linker.iplist[0];
     co(function *() {
         var rename = [];
+
         res.renameList.forEach(function (val) {
-            console.log(val);
+            if (val === '') return;
             rename.push(renameFile(val.oldName, val.newName, val.mtime));
         });
         yield rename;
 
         var localList  = yield dirWatcher.getModified(syncFolder),
-            diffs      = yield dirWatcher.compare(localList, res.list),
+            diffs      = yield dirWatcher.compare(localList, res.list, false, syncFolder),
             result,
             it,
             arr        = [],
@@ -72,16 +91,18 @@ exports.handleSyncResponse = function (socket, res) {
             if (is(it[0], '+')) arr.push([key, +it.substr(1)]);
             else if(is(it[0], '~')) arr2.push(key);
         }
+
         result = listHelper.handle(arr);
         result.toDownload = result.toDownload.concat(arr2); // files to download + the expired
+        // request update
         for (key in diffs[1]) {
             it = diffs[1][key];
-            if (is(it[0], '+')) result.update.push({type: '+', mtime: +it.substr(1)});
-            else if (is(it[0], '~'))result.update.push({type: '~', mtime: +it.substr(1)});
+            if (is(it[0], '+')) result.update.push({type: '+', mtime: +it.substr(1), name: key});
+            else if (is(it[0], '~'))result.update.push({type: '~', mtime: +it.substr(1), name: key});
         }
         var body = new Buffer(JSON.stringify(result.update));
         // send update request
-        socket.writePackage(
+        socket.linker.writePackage(
             PackageHead.create(
                 PTYPES.PULL_REQUEST,
                 socket.fromId,
@@ -97,7 +118,7 @@ exports.handleSyncResponse = function (socket, res) {
 };
 function startDownload(list, ip, port, session) {
     var limit = config.connection_limit, connections = 0, i = 0;
-    new newDownload();
+    list.length !== 0 && new newDownload();
 
     function newDownload() {
         var c = linker.createClient(ip, port, linker.ClientAction('download', [list[i], session]));
@@ -172,7 +193,7 @@ exports.handleSyncRequest = function *(socket) {
         syncFolder = settings.get('syncFolder'),
         renameList = yield dirWatcher.getList(syncFolder, 'renameList'),
         list       = yield dirWatcher.getModified(syncFolder),
-        body       = PTYPES.BODY.SYNC_RESPONSE(renameList, list);
+        body;
 
     if (renameList[0] === '') {
         renameList = [];
@@ -187,6 +208,9 @@ exports.handleSyncRequest = function *(socket) {
             };
         });
     }
+
+    body = PTYPES.BODY.SYNC_RESPONSE(renameList, list);
+
     socket.linker.writePackage(
         PackageHead.create(PTYPES.SYNC_RESPONSE, socket.linker.fromId, socket.linker.currentHead.fromId, body.length, utils.md5(body)),
         body
@@ -197,8 +221,38 @@ exports.signIn = function (pClients) {
 
 };
 
-exports.handleChange= function () {
+exports.broadcastChange = function () {
 
+};
+exports.handlePullRequest = function (socket, pkg) {
+    var data = JSON.parse(pkg.body.toString('utf-8'));
+    var task = [], toDownload = [];
+    data.forEach(function (val) {
+        switch (val.type) {
+            case 'rename': task.push(renameFile(val.oldName, val.newName, val.mtime)); break;
+            case 'delete': task.push(deleteFile(val.name, val.mtime)); break;
+            case '+':
+            case '-':
+                toDownload.push(val.name); break;
+        }
+    });
+    co(function *() {
+        yield task;
+    })();
+    
+    if (doDownload() !== false) return;
+
+    // when lstate achieves a cross, we tell it where to go
+    socket.linker.lstateNextCross = doDownload;
+    lstate.changeStateAfterTime(socket, lstate.requestIPList);
+
+    function doDownload() {
+        if (socket.linker.availableIpList && socket.linker.availableIpList[0]) {
+            startDownload(toDownload, socket.linker.availableIpList[0], config.download_port, socket.linker.sessionBuf);
+            return true;
+        }
+        return false;
+    }
 };
 
 exports.createClients = function (clients, addr, force) {

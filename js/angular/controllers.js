@@ -129,8 +129,8 @@ angular.module('Linker.controllers', []).
       dirWatcher.unwatchAll(); // only one folder is allowed to be watched at one time
       dirWatcher.watch(syncFolder, function (diff) {
         utils.log('LOG', diff);
-        syncHandler.handleChange(server, diff);
-        syncHandler.handleChange(clients, diff);
+        syncHandler.broadcastChange(server, diff);
+        syncHandler.broadcastChange(clients, diff);
       });
 
       loadClientsFromLocalList();
@@ -146,6 +146,7 @@ angular.module('Linker.controllers', []).
   }])
   .controller('IpaddressCtrl', ['$scope', 'storage', 'sharedObject', function ($scope, storage, sharedObject) {
     var syncHandler = require('./js/synchandler');
+
     // initialize
     $scope.addresses = storage.get('devicesaddr', ['']);
     
@@ -189,6 +190,7 @@ angular.module('Linker.controllers', []).
       }
       return '';
     };
+
 
   }]);
 })();

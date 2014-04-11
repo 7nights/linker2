@@ -25,6 +25,21 @@ function changeState(ctx, sold, snew) {
     ctx.lstate = snew;
     typeof ctx.afterLinkerStateChange === 'function' && ctx.afterLinkerStateChange(sold, snew);
 }
+/**
+ * after a random seconds(.2s ~ .7s), change state if socket.lstate is idle.
+ * This is because sometimes clients and server may block at the same time, and are both waiting
+ * each other for response. lstates which may block should set a timeout when wait for a package response.
+ * In fact, just one side rolls back can solve the dead lock. So you can only do this on server side.
+ */
+function changeStateAfterTime(ctx, target) {
+    changeState(ctx, ctx.linker.lstate, exports.idle);
+    setTimeout(function fn() {
+        if (ctx.linker.lstate === exports.idle) {
+            return changeState(ctx, exports.idle, target);
+        }
+        setTimeout(fn, Math.random() * 5000 + 2000);
+    }, Math.random() * 5000 + 2000);
+}
 
 function getIPlist() {
     var ips = networks(), address = [];
@@ -168,8 +183,17 @@ exports.requestIPList = function *requestIPList() {
         PackageHead.create(PTYPES.IPLIST_REQUEST, this.linker.fromId, 0, 0)
     );
 
-    var pkg = yield this.linker.pqueue.get(8000);
-    if (pkg === null) throw new Error('Timeout');
+    var pkg;
+    if (this.linker.server) {
+        pkg = yield this.linker.pqueue.get(4000);
+    } else {
+        pkg = yield this.linker.pqueue.get(10000);
+    }
+    
+    if (pkg === null) {
+        changeStateAfterTime(this, exports.requestIPList);
+        throw new Error('Timeout');
+    }
 
     var
         addr      = JSON.parse(pkg.body),
@@ -223,6 +247,15 @@ exports.requestIPList.packageType = [PTYPES.IPLIST_RESPONSE];
 exports.pingIPList = function *pingIPList() {
     this.linker.availableIpList = yield pingIpAddress(this.linker, this.linker.iplist);
 
+    if (this.linker.lstateNextCross) {
+        if ('packageType' in this.linker.lstateNextCross) {
+            var target = this.linker.lstateNextCross;
+            this.linker.lstateNextCross = null;
+            return changeState(this, this.lstate, target);
+        } else {
+            return this.linker.lstateNextCross();
+        }
+    }
     return changeState(this, this.lstate, exports.waitForSync);
 };
 function *pingIpAddress(linker, list) {
@@ -293,6 +326,9 @@ exports.idle = function *idle() {
             break;
         case PTYPES.DOWNLOAD:
             syncHandler.handleDownloadRequest(this, pkg);
+            break;
+        case PTYPES.PULL_REQUEST:
+            syncHandler.handlePullRequest();
             break;
     }
 };

@@ -106,18 +106,24 @@ function *getList(path, name) {
   return data;
 }
 
-function *listHelper(path) {
+function *ListHelper(path) {
   this.path = path;
   this.removeList = yield getList(path, 'removeList');
   this.renameList = yield getList(path, 'renameList');
+  
   return this;
 }
-listHelper.prototype = {
+ListHelper.prototype.
   /**
    * @param {String} items[n][0] file path of the new file
    * @param {Number} items[n][1] mtime of the new file
    */
-  handle: function (items) {
+  handle = function (items) {
+    debugger;
+    if (items.length === 0) return {
+      update: [],
+      toDownload: []
+    };
 
     var findStart = function (mtime, list) {
       var left = 0, right = list.length, mid, it, index;
@@ -193,8 +199,7 @@ listHelper.prototype = {
       toDownload: toDownload,
       update: update
     };
-  }
-};
+  };
 
 /**
  * 比较list1以及list2, 返回的结果是一个数组
@@ -207,21 +212,25 @@ listHelper.prototype = {
  * and do this only when you compare 2 local list
  * each line of removeList looks like this:
  * timeStamp fileName
- * @param {String} [path] path of the master directory
+ * @param {String} path path of the master directory
  * @returns [Array]
  */
 function *compare(list1, list2, recordRemove, path) {
   var list1Map = {},
       list2Map = {},
-      rlt1     = [],
-      rlt2     = [],
+      rlt1     = {},
+      rlt2     = {},
       str      = '';
+
+  if (!path) path = './';
 
   var walk = function (list, map, currentPath) {
     if (list.constructor === Array) {
       map[currentPath] = list[0];
       for (var key in list[1]) {
+
         walk(list[1][key], map, require('path').join(currentPath, key));
+
       }
     } else if (typeof list === 'number') {
       map[currentPath] = list;
@@ -256,21 +265,22 @@ function *compare(list1, list2, recordRemove, path) {
     }
     else console.log(key, '$');
     if (!(key in list2Map)) {
-      rlt1.push(getObj(key, '-' + list1Map[key])); // clients ignore '-'
-      rlt2.push(getObj(key, '+' + list1Map[key]));
+      rlt1[key] = '-' + list1Map[key];
+      rlt2[key] = '+' + list1Map[key];
+
     } else if (list1Map[key] > list2Map[key]) {
       delete list2Map[key];
-      rlt2.push(getObj(key, '~' + list1Map[key]));
+      rlt2[key] = '~' + list1Map[key];
     } else if (list1Map[key] < list2Map[key]) {
-      rlt1.push(getObj(key, '~' + list2Map[key]));
+      rlt1[key] = '~' + list2Map[key];
       delete list2Map[key];
     } else {
       delete list2Map[key];
     }
   }
   for (key in list2Map) {
-    rlt1.push(getObj(key, '+' + list2Map[key]));
-    rlt2.push(getObj(key, '-' + list2Map[key]));
+    rlt1[key] = '+' + list2Map[key];
+    rlt2[key] = '-' + list2Map[key];
   }
 
   return [rlt1, rlt2];
@@ -387,3 +397,4 @@ exports.isWatching = isWatching;
 exports.compare = compare;
 exports.getModified = getModified;
 exports.getList = getList;
+exports.ListHelper = ListHelper;

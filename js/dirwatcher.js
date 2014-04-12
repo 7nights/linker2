@@ -15,6 +15,7 @@ var co = require('co'),
  * }]
  */
 function *getModified(path, obj, inoList) {
+  var filenames = {}, p;
   var topest = false;
   if (!obj) {
     obj = [0, {}];
@@ -37,19 +38,21 @@ function *getModified(path, obj, inoList) {
   for (var i = 0, length = list.length; i < length; i++) {
     if (list[i][0] === '.' || stats[i] === null) continue;
     // records ino
-    inoList[stats[i].ino] = [path + '/' + list[i], + stats[i].mtime];
+    p = require('path').join(path, list[i]);
+    inoList[stats[i].ino] = [p, + stats[i].mtime];
+    filenames[p] = stats[i].ino;
 
     if (+ stats[i].mtime > currentMtime) currentMtime = + stats[i].mtime;
     if (stats[i].isDirectory()) {
       var _obj = [+ stats[i].mtime, {}];
-      obj[1][list[i]] = yield getModified(path + '/' + list[i], _obj, inoList);
+      obj[1][list[i]] = yield getModified(require('path').join(path, list[i]), _obj, inoList);
     } else {
       obj[1][list[i]] = + stats[i].mtime;
     }
   }
 
   obj[0] = currentMtime;
-  if (topest) yield recordRename(path, inoList);
+  if (topest) yield recordRename(path, inoList, filenames);
 
   return obj;
 }
@@ -62,7 +65,7 @@ function *getModified(path, obj, inoList) {
  * the inoList file is JSON formatted and looks like this:
  * {ino: [filename, mtime], ino: [filename, mtime], ...}
  */
-function *recordRename(path, inoList) {
+function *recordRename(path, inoList, filenames) {
   var renameList = [];
   try {
     var records = JSON.parse(yield fs.readFile(path + '/.linker/inoList', {encoding: 'utf-8'}));
@@ -73,9 +76,11 @@ function *recordRename(path, inoList) {
     }
     throw e;
   }
+  var filenames = {};
 
   for(var key in records) {
-    if (key in inoList && inoList[key][0] !== records[key][0]) {
+    if (key in inoList && inoList[key][0] != records[key][0] ) {
+      if (records[key][0] in filenames && filenames[records[key][0]] === key) continue; // ignore links
       renameList.push({mtime: inoList[key][1], oldPath: records[key][0], newPath: inoList[key][0]});
     }
   }

@@ -124,14 +124,13 @@ ListHelper.prototype.
    * @param {Number} items[n][1] mtime of the new file
    */
   handle = function (items) {
-    debugger;
     if (items.length === 0) return {
       update: [],
       toDownload: []
     };
 
     var findStart = function (mtime, list) {
-      var left = 0, right = list.length, mid, it, index;
+      var left = 0, right = list.length, mid, it, index, num;
       while (left !== right) {
         mid = parseInt((left + right) / 2);
         it = list[mid];
@@ -331,7 +330,7 @@ function watch(path, onChangeCallback, onInitialized) {
           ret = null;
 
         var diff = yield compare(oldList, newList, true, path);
-        console.log(diff, newList);
+        //console.log(diff, newList);
 
         yield fs.writeFile(require('path').join(path, '.linker', 'fileList'), JSON.stringify(newList));
         if (Object.keys(diff[0]).length > 0 || Object.keys(diff[1]).length > 0) typeof onChangeCallback === 'function' && onChangeCallback(diff);

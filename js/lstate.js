@@ -24,6 +24,7 @@ function changeState(ctx, sold, snew) {
     ctx.lstatePre = sold;
     ctx.lstate = snew;
     typeof ctx.afterLinkerStateChange === 'function' && ctx.afterLinkerStateChange(sold, snew);
+    ctx.emit('lstatechange', sold, snew);
 }
 /**
  * after a random seconds(.2s ~ .7s), change state if socket.lstate is idle.
@@ -328,7 +329,7 @@ exports.idle = function *idle() {
             syncHandler.handleDownloadRequest(this, pkg);
             break;
         case PTYPES.PULL_REQUEST:
-            syncHandler.handlePullRequest();
+            syncHandler.handlePullRequest(this, pkg);
             break;
     }
 };

@@ -92,7 +92,7 @@ angular.module('Linker.controllers', []).
       // load device address records
       var addr = storage.get('devicesaddr', []);
       if (addr.length > 0) syncHandler.createClients(clients, addr);
-    };
+    }
 
     // events
     $scope.minimizeToTaskbar = function () {
@@ -145,7 +145,8 @@ angular.module('Linker.controllers', []).
     };
   }])
   .controller('IpaddressCtrl', ['$scope', 'storage', 'sharedObject', function ($scope, storage, sharedObject) {
-    var syncHandler = require('./js/synchandler');
+    var syncHandler = require('./js/synchandler'),
+        clients     = sharedObject.get('clients');
 
     // initialize
     $scope.addresses = storage.get('devicesaddr', ['']);
@@ -177,16 +178,20 @@ angular.module('Linker.controllers', []).
     };
     $scope.ifSuccess = function (addr) {
       addr = 'device:/' + addr;
-      return sharedObject.get('clients')[addr] && !sharedObject.get('clients')[addr].lastError;
+      return clients[addr] && clients[addr].linker.handshaked;
     };
+
     $scope.reconnect = function (addr) {
-      syncHandler.createClients(sharedObject.get('clients'), [addr], true);
+      syncHandler.createClients(clients, [addr], true);
+      clients['device:/' + addr].once('lstatechange', function (sold) {
+        if (sold === 'waitForHandshakeResponse') $scope.$digest();
+      });
     };
     $scope.getStatus = function (addr) {
       addr = 'device:/' + addr;
-      if (sharedObject.get('clients')[addr] && sharedObject.get('clients')[addr].lstate) {
+      if (clients[addr] && clients[addr].lstate) {
 
-        return sharedObject.get('clients')[addr].lstate.name;
+        return clients[addr].lstate.name;
       }
       return '';
     };

@@ -360,6 +360,9 @@ function lClient() {
       s.on('close', function () {
         s.ended = true;
       });
+      s.on('lstatechange', function (sold, snew) {
+        if (sold.name === 'waitForHandshakeResponse') s.linker.handshaked = true;
+      });
 
       handleState(s, lstate.initConnection);
     });

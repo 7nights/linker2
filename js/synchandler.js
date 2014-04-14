@@ -101,6 +101,8 @@ exports.handleSyncResponse = function (socket, res) {
             else if (is(it[0], '~'))result.update.push({type: '~', mtime: +it.substr(1), name: key});
         }
         var body = new Buffer(JSON.stringify(result.update));
+        console.log(body);
+        return;
         // send update request
         socket.linker.writePackage(
             PackageHead.create(
@@ -117,6 +119,7 @@ exports.handleSyncResponse = function (socket, res) {
     })();
 };
 function startDownload(list, ip, port, session) {
+
     var limit = config.connection_limit, connections = 0, i = 0;
     list.length !== 0 && new newDownload();
 

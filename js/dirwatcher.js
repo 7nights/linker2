@@ -267,7 +267,7 @@ function *compare(list1, list2, recordRemove, path) {
       delete list2Map[key];
       continue;
     }
-    else console.log(key, '$');
+    //else console.log(key, '$');
     if (!(key in list2Map)) {
       rlt1[key] = '-' + list1Map[key];
       rlt2[key] = '+' + list1Map[key];

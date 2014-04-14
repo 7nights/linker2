@@ -9,7 +9,8 @@ var
     crypto      = require('crypto'),
     PTYPES      = require('./ptypes'),
     utils       = require('./utils'),
-    config      = require('./config')
+    config      = require('./config'),
+    lstate      = require('./lstate'),
     linker      = require('./core');
 
 function *renameFile(oldName, newName, mtime) {
@@ -101,8 +102,7 @@ exports.handleSyncResponse = function (socket, res) {
             else if (is(it[0], '~'))result.update.push({type: '~', mtime: +it.substr(1), name: key});
         }
         var body = new Buffer(JSON.stringify(result.update));
-        console.log(body);
-        return;
+
         // send update request
         socket.linker.writePackage(
             PackageHead.create(

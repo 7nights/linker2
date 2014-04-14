@@ -133,7 +133,7 @@ exports.waitForHandshake = function *waitForHandshake() {
             PackageHead.create(PTYPES.HANDSHAKE_RESPONSE, this.linker.fromId, pkg.head.fromId, body.length, utils.md5(body)),
             body
         );
-        console.log('handleshake success');
+        console.log('handshake success');
         return changeState(this, this.lstate, exports.idle);
     } else {
         throw new Error('HandshakeFailed');

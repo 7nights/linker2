@@ -267,7 +267,8 @@ function waitForDeliverable(type, s) {
 /**
  * Linker server
  */
-function lServer() {
+function lServer(downloadServer) {
+
   var connectListeners = [],
       server = net.createServer(function (c) {
     connectListeners.forEach(function (val) {
@@ -276,6 +277,7 @@ function lServer() {
     var packageBuffer = new NiceBuffer;
     packageBuffer.state = packageWaitForHeader;
     initLinkerSocket(c);
+
     // bind socket to server
     c.linker.server = server;
 
@@ -302,8 +304,13 @@ function lServer() {
   server.on('close', function (err) {
     server.ended = true;
   });
-  server.listen(config.port, function () {
+
+  var port = downloadServer ? config.download_port : config.port;
+  server.listen(port, function () {
     console.log('Linker server established.');
+    if (!downloadServer) {
+      server.downloadServer = lServer(true);
+    }
   });
   server.sessions = {};
 
@@ -393,7 +400,7 @@ function lClient() {
           setTimeout(function () {
             if (!fn.called) {
               fn.called = true;
-              fn(new Error('Timeout'));
+              fn(new Error('PingTimeout'));
             }
           }, timeout);
         };

@@ -32,7 +32,7 @@ function changeState(ctx, sold, snew) {
  * each other for response. lstates which may block should set a timeout when wait for a package response.
  * In fact, just one side rolls back can solve the dead lock. So you can only do this on server side.
  */
-function changeStateAfterTime(ctx, target) {
+var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target) {
     changeState(ctx, ctx.linker.lstate, exports.idle);
     setTimeout(function fn() {
         if (ctx.linker.lstate === exports.idle) {

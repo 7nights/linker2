@@ -166,6 +166,7 @@ exports.download = function *download() {
         PackageHead.create(PTYPES.DOWNLOAD, this.linker.fromId, 0, body.length, utils.md5(body)),
         body
     );
+    this.linker.downloadTo = to;
 
     changeState(this, this.lstate, exports.handleDownloadResponse);
 };

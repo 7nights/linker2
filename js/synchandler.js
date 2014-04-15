@@ -130,6 +130,7 @@ function startDownload(list, ip, port, session) {
         i++;
         connections++;
         c.once('close', function () {
+
             connections--;
             if (connections <= limit && i < list.length) newDownload();
         });
@@ -164,7 +165,6 @@ exports.handleDownloadRequest = function (s, pkg) {
 };
 
 exports.handleDownloadedFile = function (s, fileName) {
-    debugger;
     // TODO: resolve file conflict
     try {
         var fs = require('fs');
@@ -177,21 +177,32 @@ exports.handleDownloadedFile = function (s, fileName) {
             rs.removeListener('readable', fn);
             // compare mtime
             mtime = +(new int64(mtime));
-            var oriMtime = 0;
+            var oriMtime = 0, p = path.join(settings.get('syncFolder'), s.linker.downloadTo),
+                notExists = false;
             try {
-                oriMtime = fs.statSync(s.linker.downloadTo);
-            } catch (e) {}
+                oriMtime = fs.statSync(p);
+            } catch (e) {
+                notExists = true;
+            }
             if (oriMtime < mtime) {
-                var stat = fs.statSync(s.linker.downloadTo);
+                var atime;
+                if (notExists) {
+                    atime = new Date();
+                } else {
+                    atime = fs.statSync(p).atime;
+                }
                 /* simply rewrite the file if downloaded file is newer than the local one.
                  * TODO: file backup should be done here
                  */
-                var ws = fs.createWriteStream(s.linker.downloadTo);
+                var ws = fs.createWriteStream(p);
                 ws.on('finish', function () {
                     fs.unlink(fileName);
-                    fs.utimesSync(s.linker.downloadTo, stat.atime, new Date(mtime));
+                    fs.utimesSync(p, atime, new Date(mtime));
                 });
                 rs.pipe(ws);
+            } else {
+                // clean up
+                fs.unlink(fileName);
             }
         });
     } catch(e) { utils.log('ERROR', e); }

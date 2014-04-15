@@ -175,7 +175,8 @@ function packageWaitForHeader(s) {
     // verify body
     utils.fileMd5(p.writeablePath, function (err, md5) {
       if (err) throw err;
-      if (!s.linker.currentHead.verify(md5)) {
+      if (s.linker.currentHead.verify(md5)) {
+        // pass
         co(function *() {
           var head = s.linker.currentHead;
           yield waitForDeliverable(s.linker.currentHead.type, s);
@@ -211,6 +212,7 @@ function packageWaitForBody(s) {
     var bodyBuf = p.shift(dataLength);
     // TODO verify body
     if (!s.linker.currentHead.verify(md5(bodyBuf))) {
+      // does not pass
       console.log('Body verification failed...');
       console.log('Data length: ' + s.linker.currentHead.dataLength, 'Body length: ' + bodyBuf.length);
       p.state = packageError;

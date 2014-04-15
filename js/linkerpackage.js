@@ -58,6 +58,7 @@ PackageHead.prototype = {
     var helper = new Buffer(8);
     helper.writeUInt32LE(this.fromId, 0);
     helper.writeUInt32LE(this.toId, 4);
+
     if(this.dataLength === 0){
       return this.hash.toString('hex') == md5(Buffer.concat([helper, new Buffer(settings.get('password'))])).toString('hex');
     }

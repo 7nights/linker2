@@ -38,7 +38,7 @@ angular.module('Linker.controllers', []).
       } else {
         location.hash = 'step2';
       }
-    }, 200);
+    }, 2000);
 
     // events
     $scope.exit = function () {

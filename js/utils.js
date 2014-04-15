@@ -55,6 +55,7 @@ exports.fileMd5 = function (p, callback, encoding, h) {
   }
 
   fstream.on('end', function () {
+    if (fstream.ended) return;
     fstream.ended = true;
     callback(null, hash.digest(encoding));
   });
@@ -64,6 +65,7 @@ exports.fileMd5 = function (p, callback, encoding, h) {
       hash.update(d);
       if (d.length < 1024) {
         console.log('file md5 end');
+        fstream.ended = true;
         return callback(null, hash.digest(encoding));
       }
       else if (fstream.ended) return;

@@ -47,7 +47,7 @@ exports.md5 = function (data, encoding) {
   return hash.digest(encoding);
 };
 exports.fileMd5 = function (p, callback, encoding, h) {
-  var hash    = h || crypto.createHash('md5');
+  var hash = h || crypto.createHash('md5');
   try {
     fstream = fs.createReadStream(p);
   } catch (e) {
@@ -56,12 +56,17 @@ exports.fileMd5 = function (p, callback, encoding, h) {
 
   fstream.on('end', function () {
     fstream.ended = true;
+    callback(null, hash.digest(encoding));
   });
   fstream.on('readable', function () {
     var d;
     while((d = fstream.read(1024)) !== null) {
       hash.update(d);
-      if (d.length < 1024 || fstream.ended) return callback(null, hash.digest(encoding));
+      if (d.length < 1024) {
+        console.log('file md5 end');
+        return callback(null, hash.digest(encoding));
+      }
+      else if (fstream.ended) return;
     }
   }); 
 };

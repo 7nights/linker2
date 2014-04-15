@@ -227,7 +227,7 @@ function *compare(list1, list2, recordRemove, path) {
       rlt2     = {},
       str      = '';
 
-  if (!path) path = './';
+  if (1) path = './';
 
   var walk = function (list, map, currentPath) {
     if (list.constructor === Array) {

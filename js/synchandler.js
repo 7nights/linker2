@@ -114,6 +114,7 @@ exports.handleSyncResponse = function (socket, res) {
             ),
             body
         );
+
         // start download
         return startDownload(result.toDownload, socket.linker.availableIpList[0], config.port, socket.linker.sessionBuf);
     })();
@@ -143,7 +144,8 @@ exports.handleDownloadRequest = function (s, pkg) {
         var hash = crypto.createHash('md5'),
             p    = path.join(syncFolder, args.path),
             stat = require('fs').statSync(p),
-            mtimeBuf = (new int64(+stat.mtime)).Buffer;
+            mtimeBuf = (new int64(+stat.mtime)).buffer;
+
         hash.update(mtimeBuf);
         utils.fileMd5(p, function (md5) {
             s.linker.writePackage(

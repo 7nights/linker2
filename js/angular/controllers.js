@@ -178,7 +178,7 @@ angular.module('Linker.controllers', []).
     };
     $scope.ifSuccess = function (addr) {
       addr = 'device:/' + addr;
-      return clients[addr] && clients[addr].linker.handshaked;
+      return clients[addr] && clients[addr].linker && clients[addr].linker.handshaked;
     };
 
     $scope.reconnect = function (addr) {

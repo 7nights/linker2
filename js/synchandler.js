@@ -115,7 +115,7 @@ exports.handleSyncResponse = function (socket, res) {
             body
         );
         // start download
-        return startDownload(result.toDownload, socket.linker.availableIpList[0], config.download_port, socket.linker.sessionBuf);
+        return startDownload(result.toDownload, socket.linker.availableIpList[0], config.port, socket.linker.sessionBuf);
     })();
 };
 function startDownload(list, ip, port, session) {
@@ -152,6 +152,7 @@ exports.handleDownloadRequest = function (s, pkg) {
             );
         }, undefined, hash);
     } else {
+        console.log(args.session, s.linker.server.sessions);
         utils.log('ERROR', 'Bad download destination');
         s.end();
     }
@@ -251,7 +252,7 @@ exports.handlePullRequest = function (socket, pkg) {
 
     function doDownload() {
         if (socket.linker.availableIpList && socket.linker.availableIpList[0]) {
-            startDownload(toDownload, socket.linker.availableIpList[0], config.download_port, socket.linker.sessionBuf);
+            startDownload(toDownload, socket.linker.availableIpList[0], config.port, socket.linker.sessionBuf);
             return true;
         }
         return false;

@@ -267,7 +267,7 @@ function waitForDeliverable(type, s) {
 /**
  * Linker server
  */
-function lServer(downloadServer) {
+function lServer() {
 
   var connectListeners = [],
       server = net.createServer(function (c) {
@@ -305,12 +305,8 @@ function lServer(downloadServer) {
     server.ended = true;
   });
 
-  var port = downloadServer ? config.download_port : config.port;
-  server.listen(port, function () {
+  server.listen(config.port, function () {
     console.log('Linker server established.');
-    if (!downloadServer) {
-      server.downloadServer = lServer(true);
-    }
   });
   server.sessions = {};
 

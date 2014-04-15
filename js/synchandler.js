@@ -146,9 +146,9 @@ exports.handleDownloadRequest = function (s, pkg) {
             p    = path.join(syncFolder, args.path),
             stat = require('fs').statSync(p),
             mtimeBuf = (new int64(+stat.mtime)).buffer;
-        debugger;
+
         hash.update(mtimeBuf);
-        utils.fileMd5(p, function (md5) {
+        utils.fileMd5(p, function (err, md5) {
             s.linker.writePackage(
                 PackageHead.create(PTYPES.DOWNLOAD_RESPONSE, s.linker.fromId, s.linker.currentHead.fromId, mtimeBuf.length + stat.size, md5),
                 [mtimeBuf, require('fs').createReadStream(p)]

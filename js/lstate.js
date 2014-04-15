@@ -155,7 +155,7 @@ exports.waitForHandshakeResponse = function *waitForHandshakeResponse() {
 };
 exports.waitForHandshakeResponse.packageType = [PTYPES.HANDSHAKE_RESPONSE];
 
-exports.download = function *() {
+exports.download = function *download() {
     var 
         args    = this.linker.action.args,
         to      = args[0],

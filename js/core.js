@@ -157,7 +157,7 @@ function packageWaitForHeader(s) {
     return;
   }
 
-  if (s.linker.currentHead.type === PTYPES.DOWNLOAD) {
+  if (s.linker.currentHead.type === PTYPES.DOWNLOAD_RESPONSE) {
     // we need create a write stream for downloading a file
     p.writeablePath = require('path').join(require('os').tmpdir(), 'linker' + utils.getRandomBytes(16).toString('hex'));
     p.writeable = require('fs').createWriteStream(p.writeablePath);

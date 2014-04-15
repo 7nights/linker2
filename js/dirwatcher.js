@@ -14,8 +14,9 @@ var co = require('co'),
  *   'exampleFile': 1393136953189
  * }]
  */
-function *getModified(path, obj, inoList) {
-  var filenames = {}, p;
+function *getModified(path, obj, inoList, root) {
+  root = root || path;
+  var filenames = {}, p, npath = require('path');
   var topest = false;
   if (!obj) {
     obj = [0, {}];
@@ -39,13 +40,13 @@ function *getModified(path, obj, inoList) {
     if (list[i][0] === '.' || stats[i] === null) continue;
     // records ino
     p = require('path').join(path, list[i]);
-    inoList[stats[i].ino] = [p, + stats[i].mtime];
+    inoList[stats[i].ino] = [npath.relative(root, p), + stats[i].mtime];
     filenames[p] = stats[i].ino;
 
     if (+ stats[i].mtime > currentMtime) currentMtime = + stats[i].mtime;
     if (stats[i].isDirectory()) {
       var _obj = [+ stats[i].mtime, {}];
-      obj[1][list[i]] = yield getModified(require('path').join(path, list[i]), _obj, inoList);
+      obj[1][list[i]] = yield getModified(require('path').join(path, list[i]), _obj, inoList, root);
     } else {
       obj[1][list[i]] = + stats[i].mtime;
     }
@@ -250,7 +251,7 @@ function *compare(list1, list2, recordRemove, path) {
 
     for (var key in list1Map) {
       if (!(key in list2Map)) {
-        str += list1Map[key] + ' ' + key + '\n';
+        str += list1Map[key] + ' ' + require('path').relative(path, key) + '\n';
       }
     }
 

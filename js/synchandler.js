@@ -125,6 +125,7 @@ function startDownload(list, ip, port, session) {
     list.length !== 0 && new newDownload();
 
     function newDownload() {
+        console.log('create download client', list[i]);
         var c = linker.createClient(ip, port, linker.ClientAction('download', [list[i], session]));
         i++;
         connections++;
@@ -145,14 +146,16 @@ exports.handleDownloadRequest = function (s, pkg) {
             p    = path.join(syncFolder, args.path),
             stat = require('fs').statSync(p),
             mtimeBuf = (new int64(+stat.mtime)).buffer;
-
+        debugger;
         hash.update(mtimeBuf);
         utils.fileMd5(p, function (md5) {
             s.linker.writePackage(
                 PackageHead.create(PTYPES.DOWNLOAD_RESPONSE, s.linker.fromId, s.linker.currentHead.fromId, mtimeBuf.length + stat.size, md5),
                 [mtimeBuf, require('fs').createReadStream(p)]
             );
+            console.log('download response send...');
         }, undefined, hash);
+
     } else {
         console.log(args.session, s.linker.server.sessions);
         utils.log('ERROR', 'Bad download destination');
@@ -161,6 +164,7 @@ exports.handleDownloadRequest = function (s, pkg) {
 };
 
 exports.handleDownloadedFile = function (s, fileName) {
+    debugger;
     // TODO: resolve file conflict
     try {
         var fs = require('fs');

@@ -147,7 +147,8 @@ exports.handleDownloadRequest = function (s, pkg) {
     var syncFolder = settings.get('syncFolder');
     var args = JSON.parse(pkg.body.toString('utf-8'));
     console.log('handle download request', args.path);
-    if (args.session in s.linker.server.sessions) {
+    if (args.session in s.linker.server.sessions || 
+        args.session === (new Buffer(config.uid)).toString('hex')) {
         // calculate file md5
         var hash = crypto.createHash('md5'),
             p    = path.join(syncFolder, args.path),
@@ -290,7 +291,7 @@ exports.handlePullRequest = function (socket, pkg) {
 
     function doDownload() {
         if (socket.linker.availableIpList && socket.linker.availableIpList[0]) {
-            startDownload(toDownload, socket.linker.availableIpList[0], config.port, socket.linker.sessionBuf);
+            startDownload(toDownload, socket.linker.availableIpList[0], config.port, socket.linker.uid);
             return true;
         }
         return false;

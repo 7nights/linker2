@@ -37,6 +37,7 @@ var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target)
     changeState(ctx, ctx.lstate, exports.idle);
     setTimeout(function fn() {
         if (ctx.lstate === exports.idle) {
+            ctx.linker.pqueue.push(null);
             return changeState(ctx, exports.idle, target);
         }
         setTimeout(fn, Math.random() * 5000 + 2000);
@@ -321,6 +322,8 @@ exports.handleDownloadResponse.packageType = [PTYPES.DOWNLOAD_RESPONSE];
 
 exports.idle = function *idle() {
     var pkg = yield this.linker.pqueue.get();
+
+    if (pkg === null) return;
 
     switch(pkg.head.type) {
         case PTYPES.IPLIST_REQUEST:

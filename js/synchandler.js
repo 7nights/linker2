@@ -13,6 +13,8 @@ var
     lstate      = require('./lstate'),
     linker      = require('./core');
 
+console.log = function () {};
+
 function *renameFile(oldName, newName, mtime) {
     var syncFolder = settings.get('syncFolder');
     if (!syncFolder) return;
@@ -122,19 +124,22 @@ exports.handleSyncResponse = function (socket, res) {
 function startDownload(list, ip, port, session) {
 
     var limit = config.connection_limit || 4, connections = 0, i = 0;
-    list.length !== 0 && new newDownload();
+    list.length !== 0 && newDownload();
 
     function newDownload() {
-        console.log('create download client', list[i]);
+        console.log('create download client', list[i], i, list.length, list);
+
         var c = linker.createClient(ip, port, linker.ClientAction('download', [list[i], session]));
+        c.test = list[i];
         i++;
         connections++;
         c.once('finishwriting', function () {
-
+            console.log('finishwriting', c.test);
             connections--;
-            if (connections <= limit && i < list.length) newDownload();
+            if (connections < limit && i < list.length) newDownload();
         });
-        if (connections <= limit && i < list.length) newDownload();
+
+        if (connections < limit && i < list.length) newDownload();
     }
 }
 
@@ -198,8 +203,10 @@ exports.handleDownloadedFile = function (s, fileName) {
                  */
                 var ws = fs.createWriteStream(p);
                 ws.on('finish', function () {
-                    fs.statSync(p); // to fix the issue on windows where fs.utimes may have no effect
-                    fs.utimesSync(p, atime, new Date(mtime));
+                    var d = new Date(mtime);
+                    while (!timeEqual(+fs.statSync(p).mtime, mtime)) {
+                        fs.utimesSync(p, atime, d);
+                    }
                     fs.unlink(fileName);
                     s.emit('finishwriting');
                 });
@@ -211,6 +218,13 @@ exports.handleDownloadedFile = function (s, fileName) {
             }
         });
     } catch(e) { utils.log('ERROR', e); }
+    function timeEqual(t1, t2, range) {
+        range = range || 1000;
+        if (Math.abs(t1 - t2) / 1000 < 1) {
+            return true;
+        }
+        return false;
+    }
 };
 
 exports.handleSyncRequest = function *(socket) {

@@ -246,10 +246,10 @@ function *compare(list1, list2, recordRemove, path) {
   walk(list2, list2Map, '');
 
   if (recordRemove) {
-
+    var now = new Date;
     for (var key in list1Map) {
       if (!(key in list2Map)) {
-        str += list1Map[key] + ' ' + require('path').relative(path, key) + '\n';
+        str += now + ' ' + require('path').relative(path, key) + '\n';
       }
     }
 

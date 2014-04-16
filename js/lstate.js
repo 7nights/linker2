@@ -144,11 +144,12 @@ exports.waitForHandshake.packageType = [PTYPES.HANDSHAKE_REQUEST, PTYPES.PING];
 
 exports.waitForHandshakeResponse = function *waitForHandshakeResponse() {
     var pkg = yield this.linker.pqueue.get();
-    console.log('get handleshake response');
+    console.log('get handshake response');
 
     this.linker.sessionBuf = pkg.body;
 
     if (this.linker.action && this.linker.action.type === 'download') {
+        console.log('action is', this.linker.action);
         changeState(this, this.lstate, exports.download);
     } else {
         changeState(this, this.lstate, exports.initSync);
@@ -168,6 +169,7 @@ exports.download = function *download() {
         body
     );
     this.linker.downloadTo = to;
+    console.log('lstate download request sent...', to);
 
     changeState(this, this.lstate, exports.handleDownloadResponse);
 };
@@ -311,6 +313,7 @@ exports.handleIPListRequest = function *handleIPListRequest() {
 
 exports.handleDownloadResponse = function *handleDownloadRequest() {
     var pkg = yield this.linker.pqueue.get();
+    //console.log('handle download response...');
     syncHandler.handleDownloadedFile(this, pkg.body);
     this.end();
 };

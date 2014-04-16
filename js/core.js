@@ -280,6 +280,9 @@ function lServer() {
     var packageBuffer = new NiceBuffer;
     packageBuffer.state = packageWaitForHeader;
     initLinkerSocket(c);
+    utils.extend(c, {
+      ping: ping
+    });
 
     // bind socket to server
     c.linker.server = server;

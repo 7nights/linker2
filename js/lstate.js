@@ -276,6 +276,7 @@ function *pingIpAddress(linker, list) {
     for (var i = 0, length = list.length; i < length; i++) {
         try {
             utils.log('LOG', 'about to ping: ' + list[i]);
+            
             yield linker.socket.ping(3000, list[i]);
         } catch (e) {
             console.log('error: ', e);

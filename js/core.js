@@ -408,7 +408,7 @@ function ping(timeout, ip, port) {
           packageBuffer.state(clt);
         });
         var sessionBuf = self.linker.uid || self.linker.sessionBuf;
-        handleState(clt, lstate.prepareForPing, self.linker.sessionBuf, fn);
+        handleState(clt, lstate.prepareForPing, sessionBuf, fn);
       });
       setTimeout(function () {
         if (!fn.called) {

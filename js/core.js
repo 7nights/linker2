@@ -317,7 +317,8 @@ function lServer() {
   utils.extend(server, {
     onConnect: function (fn) {
       connectListeners.push(fn);
-    }
+    },
+    ping: ping
   });
 
   return server;
@@ -380,30 +381,7 @@ function lClient() {
 
     // client methods
     utils.extend(s, {
-      ping: function (timeout, ip, port) {
-        var self = this;
-        return function (fn) {
-          fn.called = false;
-          !port && (port = config.port);
-          var clt = net.createConnection(port, ip, function () {
-            console.log('connection created ', port, ip);
-            var packageBuffer = new NiceBuffer;
-            packageBuffer.state = packageWaitForHeader;
-            initLinkerSocket(clt);
-            clt.on('data', function (data) {
-              packageBuffer.concat(data);
-              packageBuffer.state(clt);
-            });
-            handleState(clt, lstate.prepareForPing, self.linker.sessionBuf, fn);
-          });
-          setTimeout(function () {
-            if (!fn.called) {
-              fn.called = true;
-              fn(new Error('PingTimeout'));
-            }
-          }, timeout);
-        };
-      }
+      ping: ping
     });
 
     return s;
@@ -411,6 +389,33 @@ function lClient() {
 
   return createConnection.apply(this, [].slice.call(arguments));
 }
+
+function ping(timeout, ip, port) {
+    var self = this;
+    return function (fn) {
+      fn.called = false;
+      !port && (port = config.port);
+      var clt = net.createConnection(port, ip, function () {
+        console.log('connection created ', port, ip);
+        var packageBuffer = new NiceBuffer;
+        packageBuffer.state = packageWaitForHeader;
+        initLinkerSocket(clt);
+        clt.on('data', function (data) {
+          packageBuffer.concat(data);
+          packageBuffer.state(clt);
+        });
+        var sessionBuf = self.linker.uid || self.linker.sessionBuf;
+        handleState(clt, lstate.prepareForPing, self.linker.sessionBuf, fn);
+      });
+      setTimeout(function () {
+        if (!fn.called) {
+          fn.called = true;
+          fn(new Error('PingTimeout'));
+        }
+      }, timeout);
+    };
+}
+
 
 exports.createServer = lServer;
 exports.createClient = lClient;

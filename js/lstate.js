@@ -118,7 +118,8 @@ exports.waitForHandshake = function *waitForHandshake() {
     var pkg = yield this.linker.pqueue.get();
 
     if (pkg.head.type === PTYPES.PING) {
-        if (pkg.body.toString('hex') in this.linker.server.sessions) {
+        if (pkg.body.toString('hex') in this.linker.server.sessions
+            || pkg.body.toString('utf-8') === config.uid) {
             this.linker.writePackage(PackageHead.create(
                 PTYPES.ECHO, this.linker.fromId, pkg.head.fromId, 0
             ));
@@ -264,6 +265,7 @@ exports.pingIPList = function *pingIPList() {
             this.linker.lstateNextCross = null;
             return changeState(this, this.lstate, target);
         } else {
+            changeState(this, this.lstate, exports.idle);
             return this.linker.lstateNextCross();
         }
     }
@@ -283,7 +285,9 @@ function *pingIpAddress(linker, list) {
         utils.log('LOG', 'get ping response for: ' + list[i]);
         return [list[i]];
     }
+
     badResponse.length > 0 && utils.log('WARNING', 'No avaliable response but get bad response.');
+    return [];
 }
 exports.pingIPList.packageType = []; // block all comming packages
 

@@ -34,9 +34,9 @@ function changeState(ctx, sold, snew) {
  * In fact, just one side rolls back can solve the dead lock. So you can only do this on server side.
  */
 var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target) {
-    changeState(ctx, ctx.linker.lstate, exports.idle);
+    changeState(ctx, ctx.lstate, exports.idle);
     setTimeout(function fn() {
-        if (ctx.linker.lstate === exports.idle) {
+        if (ctx.lstate === exports.idle) {
             return changeState(ctx, exports.idle, target);
         }
         setTimeout(fn, Math.random() * 5000 + 2000);

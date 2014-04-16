@@ -104,6 +104,7 @@ exports.handleSyncResponse = function (socket, res) {
         }
         var body = new Buffer(JSON.stringify(result.update));
 
+        console.log('write update request');
         // send update request
         socket.linker.writePackage(
             PackageHead.create(

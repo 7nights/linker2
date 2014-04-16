@@ -284,9 +284,11 @@ exports.handlePullRequest = function (socket, pkg) {
 
     // when lstate achieves a cross, we tell it where to go
     socket.linker.lstateNextCross = doDownload;
+    console.log('about to change stat');
     lstate.changeStateAfterTime(socket, lstate.requestIPList);
 
     function doDownload() {
+        debugger;
         if (socket.linker.availableIpList && socket.linker.availableIpList[0]) {
             startDownload(toDownload, socket.linker.availableIpList[0], config.port, socket.linker.sessionBuf);
             return true;

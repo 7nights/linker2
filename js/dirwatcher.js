@@ -260,7 +260,8 @@ function *compare(list1, list2, recordRemove, path) {
     var now = Date.now();
     for (var key in list1Map) {
       if (!(key in list2Map)) {
-        str += now + ' ' + require('path').relative(path, key) + '\n';
+        console.log(path);
+        str += now + ' ' + key + '\n';
       }
     }
 

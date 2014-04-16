@@ -53,24 +53,18 @@ exports.fileMd5 = function (p, callback, encoding, h) {
   } catch (e) {
     return callback(e);
   }
+  var readEnd = false, callbackCalled = false;
 
   fstream.on('end', function () {
-    if (fstream.ended) return;
-    fstream.ended = true;
     callback(null, hash.digest(encoding));
   });
   fstream.on('readable', function () {
     var d;
     while((d = fstream.read(1024)) !== null) {
       hash.update(d);
-      if (d.length < 1024) {
-        console.log('file md5 end');
-        fstream.ended = true;
-        return callback(null, hash.digest(encoding));
-      }
-      else if (fstream.ended) return;
     }
-  }); 
+  });
+
 };
 exports.getRandomBytes = function (size){
   var buf = new Buffer(size);

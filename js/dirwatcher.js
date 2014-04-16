@@ -1,7 +1,18 @@
 'use strict';
 var co = require('co'),
     fs = require('co-fs'),
+    config = require('./config'),
     path = require('path');
+
+function timeCompare(t1, t2, range) {
+  range = range || config.mtime_range || 1000;
+  if (t1 > t2 && Math.abs(t1 - t2) / range > 1) {
+    return 1;
+  } else if (t1 < t2 && Math.abs(t1 - t2) / range > 1) {
+    return -1;
+  }
+  return 0;
+};
 
 /**
  * 获取目标文件夹的修改时间列表
@@ -189,7 +200,7 @@ ListHelper.prototype.
         continue;
       }
 
-      if (items[i][1] < it.mtime) {
+      if (timeCompare(items[i][1], it.mtime) === -1) {
         if ('newName' in it) {
           // renamed
           update.push({type: 'rename', mtime: it.mtime, newName: it.newName, oldName: name});
@@ -246,7 +257,7 @@ function *compare(list1, list2, recordRemove, path) {
   walk(list2, list2Map, '');
 
   if (recordRemove) {
-    var now = new Date;
+    var now = Date.now();
     for (var key in list1Map) {
       if (!(key in list2Map)) {
         str += now + ' ' + require('path').relative(path, key) + '\n';
@@ -271,10 +282,10 @@ function *compare(list1, list2, recordRemove, path) {
       rlt1[key] = '-' + list1Map[key];
       rlt2[key] = '+' + list1Map[key];
 
-    } else if (list1Map[key] > list2Map[key]) {
+    } else if (timeCompare(list1Map[key], list2Map[key]) === 1) {
       delete list2Map[key];
       rlt2[key] = '~' + list1Map[key];
-    } else if (list1Map[key] < list2Map[key]) {
+    } else if (timeCompare(list1Map[key], list2Map[key]) === -1) {
       rlt1[key] = '~' + list2Map[key];
       delete list2Map[key];
     } else {

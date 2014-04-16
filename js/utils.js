@@ -77,3 +77,12 @@ exports.getRandomBytes = function (size){
 exports.log = function (type, msg) {
     console.log('[' + type.toUpperCase() + '] ' + (msg.constructor === Array || msg.toString() === '[object Object]' ? JSON.stringify(msg) : msg));
 };
+exports.timeCompare = function (t1, t2, range) {
+  range = range || config.mtime_range || 1000;
+  if (t1 > t2 && Math.abs(t1 - t2) / range > 1) {
+    return 1;
+  } else if (t1 < t2 && Math.abs(t1 - t2) / range > 1) {
+    return -1;
+  }
+  return 0;
+};

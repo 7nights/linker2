@@ -27,9 +27,10 @@ function changeState(ctx, sold, snew) {
     ctx.emit('lstatechange', sold, snew);
 }
 /**
- * after a random seconds(.2s ~ .7s), change state if socket.lstate is idle.
+ * change state to idle and after a random seconds(.2s ~ .7s), 
+ * change state if socket.lstate is still idle.
  * This is because sometimes clients and server may block at the same time, and are both waiting
- * each other for response. lstates which may block should set a timeout when wait for a package response.
+ * each other for response. lstates which may block should set a timeout when waiting for a package response.
  * In fact, just one side rolls back can solve the dead lock. So you can only do this on server side.
  */
 var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target) {
@@ -40,7 +41,7 @@ var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target)
         }
         setTimeout(fn, Math.random() * 5000 + 2000);
     }, Math.random() * 5000 + 2000);
-}
+};
 
 function getIPlist() {
     var ips = networks(), address = [];
@@ -310,7 +311,6 @@ exports.handleIPListRequest = function *handleIPListRequest() {
 
 exports.handleDownloadResponse = function *handleDownloadRequest() {
     var pkg = yield this.linker.pqueue.get();
-
     syncHandler.handleDownloadedFile(this, pkg.body);
     this.end();
 };
@@ -321,6 +321,7 @@ exports.idle = function *idle() {
 
     switch(pkg.head.type) {
         case PTYPES.IPLIST_REQUEST:
+            console.log('received ip list request');
             changeState(this, this.lstate, exports.handleIPListRequest);
             break;
         case PTYPES.SYNC_REQUEST:

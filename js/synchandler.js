@@ -121,7 +121,7 @@ exports.handleSyncResponse = function (socket, res) {
 };
 function startDownload(list, ip, port, session) {
 
-    var limit = config.connection_limit, connections = 0, i = 0;
+    var limit = config.connection_limit || 4, connections = 0, i = 0;
     list.length !== 0 && new newDownload();
 
     function newDownload() {
@@ -129,7 +129,7 @@ function startDownload(list, ip, port, session) {
         var c = linker.createClient(ip, port, linker.ClientAction('download', [list[i], session]));
         i++;
         connections++;
-        c.once('close', function () {
+        c.once('finishwriting', function () {
 
             connections--;
             if (connections <= limit && i < list.length) newDownload();
@@ -154,7 +154,7 @@ exports.handleDownloadRequest = function (s, pkg) {
                 PackageHead.create(PTYPES.DOWNLOAD_RESPONSE, s.linker.fromId, s.linker.currentHead.fromId, mtimeBuf.length + stat.size, md5),
                 [mtimeBuf, require('fs').createReadStream(p)]
             );
-            console.log('download response send...');
+            console.log('download response sent...', args.path);
         }, undefined, hash);
 
     } else {
@@ -169,14 +169,16 @@ exports.handleDownloadedFile = function (s, fileName) {
     try {
         var fs = require('fs');
         var rs = fs.createReadStream(fileName), mtime;
+
         rs.on('readable', function fn() {
-            /* the first 64 bytes is the mtime of the file
+            /* the first 64 bits is the mtime of the file
              */
-            mtime = rs.read(64);
+            mtime = rs.read(8);
             if (mtime === null) return;
             rs.removeListener('readable', fn);
             // compare mtime
             mtime = +(new int64(mtime));
+
             var oriMtime = 0, p = path.join(settings.get('syncFolder'), s.linker.downloadTo),
                 notExists = false;
             try {
@@ -196,13 +198,16 @@ exports.handleDownloadedFile = function (s, fileName) {
                  */
                 var ws = fs.createWriteStream(p);
                 ws.on('finish', function () {
-                    fs.unlink(fileName);
+                    fs.statSync(p); // to fix the issue on windows where fs.utimes may have no effect
                     fs.utimesSync(p, atime, new Date(mtime));
+                    fs.unlink(fileName);
+                    s.emit('finishwriting');
                 });
                 rs.pipe(ws);
             } else {
                 // clean up
                 fs.unlink(fileName);
+                s.emit('finishwriting');
             }
         });
     } catch(e) { utils.log('ERROR', e); }

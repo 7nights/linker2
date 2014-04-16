@@ -13,7 +13,6 @@ var
     lstate      = require('./lstate'),
     linker      = require('./core');
 
-console.log = function () {};
 
 function *renameFile(oldName, newName, mtime) {
     var syncFolder = settings.get('syncFolder');
@@ -146,6 +145,7 @@ function startDownload(list, ip, port, session) {
 exports.handleDownloadRequest = function (s, pkg) {
     var syncFolder = settings.get('syncFolder');
     var args = JSON.parse(pkg.body.toString('utf-8'));
+    console.log('handle download request', args.path);
     if (args.session in s.linker.server.sessions) {
         // calculate file md5
         var hash = crypto.createHash('md5'),

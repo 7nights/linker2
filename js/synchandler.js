@@ -142,12 +142,35 @@ function startDownload(list, ip, port, session) {
         if (connections < limit && i < list.length) newDownload();
     }
 }
+/**
+ * indicate whether a path is safe or not
+ * @param {String} p
+ * @param {Boolean} [isDir] if the given path must be a directory.
+ * @returns {Error||null} returns an Error if the check doesn't pass.
+ */
+var checkPath = exports.checkPath = function (p, isDir) {
+    try {
+        if (path.relative(settings.get('syncFolder'), p) !== path.basename(p)) {
+            return new Error('SecurityError');
+        }
 
+        var _isDir = require('fs').statSync(p).isDirectory();
+        if (isDir === true && _isDir === false) return ('EISFILE');
+        else if (isDir === false && _isDir === true) return ('EISDIR');
+
+        return null;
+    } catch (e) {
+        return e;
+    }
+};
 exports.handleDownloadRequest = function (s, pkg) {
     var syncFolder = settings.get('syncFolder');
     var args = JSON.parse(pkg.body.toString('utf-8'));
     console.log('handle download request', args.path);
+
     if (args.session in s.linker.server.sessions || 
+        // from server which does not have the session property so it
+        // sends target's uid
         args.session === (new Buffer(config.uid)).toString('hex')) {
         // calculate file md5
         var hash = crypto.createHash('md5'),
@@ -155,6 +178,13 @@ exports.handleDownloadRequest = function (s, pkg) {
             stat = require('fs').statSync(p),
             mtimeBuf = (new int64(+stat.mtime)).buffer;
 
+        var err;
+        if (err = checkPath(p, false)) {
+            console.log('Error occured: ', err, p);
+            utils.log('ERROR', err);
+            this.end('');
+            return;
+        }
         hash.update(mtimeBuf);
         utils.fileMd5(p, function (err, md5) {
             s.linker.writePackage(

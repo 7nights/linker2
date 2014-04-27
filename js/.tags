@@ -1,0 +1,101 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BlockQueue	.\blockablequeue.js	/^function BlockQueue(maxLength) {$/;"	c
+ListHelper	.\dirwatcher.js	/^ListHelper.prototype.$/;"	c
+ListHelper.handle	.\dirwatcher.js	/^  handle = function (items) {$/;"	m
+NiceBuffer	.\core.js	/^function NiceBuffer(buf){$/;"	c
+NiceBuffer.concat	.\core.js	/^  concat: function(buf){$/;"	m
+NiceBuffer.shift	.\core.js	/^  shift: function(length){$/;"	m
+NiceBuffer.slice	.\core.js	/^  slice: function(start, end){$/;"	m
+NiceBuffer.toBuffer	.\core.js	/^  toBuffer: function(){$/;"	m
+NiceBuffer.writeUInt32	.\core.js	/^  writeUInt32: function(uint32){$/;"	m
+NiceBuffer.writeUInt8	.\core.js	/^  writeUInt8: function(uint8){$/;"	m
+Package	.\linkerpackage.js	/^function Package(head, body) {$/;"	c
+PackageHead	.\linkerpackage.js	/^PackageHead.prototype = {$/;"	c
+PackageHead	.\linkerpackage.js	/^function PackageHead(buf){$/;"	f
+PackageHead.create	.\linkerpackage.js	/^PackageHead.create = function(type, fromId, toId, dataLength, dataMD5, sharedSecret){$/;"	f
+Promise	.\promise.js	/^var Promise = function () {$/;"	f
+__mkdir	.\dirwatcher.js	/^function __mkdir(dir, mode, callback) {$/;"	f
+_mkdirp	.\dirwatcher.js	/^function _mkdirp(dir, mode) {$/;"	f
+cache	.\settings.js	/^var cache;$/;"	v
+changeState	.\lstate.js	/^function changeState(ctx, sold, snew) {$/;"	f
+co	.\core.js	/^  co             = require('co'),$/;"	v
+co	.\dirwatcher.js	/^var co = require('co'),$/;"	v
+co	.\synchandler.js	/^    co          = require('co'),$/;"	v
+config.method	.\settings.js	/^    method: 'localStorage',$/;"	p
+config.namespace	.\settings.js	/^    namespace: 'settingsStorage'$/;"	p
+crypto	.\lstate.js	/^    crypto      = require('crypto'),$/;"	v
+crypto	.\utils.js	/^var crypto = require('crypto'),$/;"	v
+exports.ClientAction	.\core.js	/^exports.ClientAction = function (type, args) {$/;"	f
+exports.broadcastChange	.\synchandler.js	/^exports.broadcastChange = function () {$/;"	f
+exports.createClients	.\synchandler.js	/^exports.createClients = function (clients, addr, force) {$/;"	f
+exports.extend	.\utils.js	/^exports.extend = function (target, source, options) {$/;"	f
+exports.fileMd5	.\utils.js	/^exports.fileMd5 = function (p, callback, encoding, h) {$/;"	f
+exports.get	.\settings.js	/^exports.get = function (key, _default) {$/;"	f
+exports.getRandomBytes	.\utils.js	/^exports.getRandomBytes = function (size){$/;"	f
+exports.handleDownloadRequest	.\synchandler.js	/^exports.handleDownloadRequest = function (s, pkg) {$/;"	f
+exports.handleDownloadedFile	.\synchandler.js	/^exports.handleDownloadedFile = function (s, fileName) {$/;"	f
+exports.handleDownloadedFile.timeEqual	.\synchandler.js	/^    function timeEqual(t1, t2, range) {$/;"	f
+exports.handlePullRequest	.\synchandler.js	/^exports.handlePullRequest = function (socket, pkg) {$/;"	f
+exports.handlePullRequest.doDownload	.\synchandler.js	/^    function doDownload() {$/;"	f
+exports.handleSyncRequest	.\synchandler.js	/^exports.handleSyncRequest = function *(socket) {$/;"	f
+exports.handleSyncResponse	.\synchandler.js	/^exports.handleSyncResponse = function (socket, res) {$/;"	f
+exports.log	.\utils.js	/^exports.log = function (type, msg) {$/;"	f
+exports.md5	.\utils.js	/^exports.md5 = function (data, encoding) {$/;"	f
+exports.set	.\settings.js	/^exports.set = function (key, value) {$/;"	f
+exports.signIn	.\synchandler.js	/^exports.signIn = function (pClients) {$/;"	f
+exports.timeCompare	.\utils.js	/^exports.timeCompare = function (t1, t2, range) {$/;"	f
+findStart	.\dirwatcher.js	/^    var findStart = function (mtime, list) {$/;"	f
+fs	.\settings.js	/^var fs = require('fs');$/;"	v
+getIPlist	.\lstate.js	/^function getIPlist() {$/;"	f
+getIPlist.filterAddress	.\lstate.js	/^    function filterAddress(val) {$/;"	f
+getNetworkSegment	.\lstate.js	/^function getNetworkSegment(addrs) {$/;"	f
+getRandomBytes	.\core.js	/^function getRandomBytes(size){$/;"	f
+handleNextDone	.\promise.js	/^        function handleNextDone() {$/;"	f
+handleNextFail	.\promise.js	/^        function handleNextFail() {$/;"	f
+handleState	.\core.js	/^function handleState(socket, state) {$/;"	f
+initLinkerSocket	.\core.js	/^function initLinkerSocket(s, action) {$/;"	f
+is	.\synchandler.js	/^function is(a, b) {$/;"	f
+isWatching	.\dirwatcher.js	/^function isWatching(path) {$/;"	f
+lClient	.\core.js	/^function lClient() {$/;"	f
+lClient.createConnection	.\core.js	/^  var createConnection = function (host, port, action, callback, errorHandler) {$/;"	f
+lServer	.\core.js	/^function lServer() {$/;"	f
+localStorage	.\settings.js	/^var localStorage = window.localStorage;$/;"	v
+md5	.\core.js	/^function md5(data, encoding) {$/;"	f
+module.exports.BODY	.\ptypes.js	/^  BODY: {$/;"	p
+module.exports.DOWNLOAD	.\ptypes.js	/^  DOWNLOAD: 11,$/;"	p
+module.exports.DOWNLOAD_RESPONSE	.\ptypes.js	/^  DOWNLOAD_RESPONSE: 12,$/;"	p
+module.exports.ECHO	.\ptypes.js	/^  ECHO: 6,$/;"	p
+module.exports.HANDSHAKE_CONFIRMED	.\ptypes.js	/^  HANDSHAKE_CONFIRMED: 4,$/;"	p
+module.exports.HANDSHAKE_INIT_VARS	.\ptypes.js	/^  HANDSHAKE_INIT_VARS: 1,$/;"	p
+module.exports.HANDSHAKE_REQUEST	.\ptypes.js	/^  HANDSHAKE_REQUEST : 2,$/;"	p
+module.exports.HANDSHAKE_RESPONSE	.\ptypes.js	/^  HANDSHAKE_RESPONSE: 3,$/;"	p
+module.exports.IPLIST_REQUEST	.\ptypes.js	/^  IPLIST_REQUEST: 7,$/;"	p
+module.exports.IPLIST_RESPONSE	.\ptypes.js	/^  IPLIST_RESPONSE: 8,$/;"	p
+module.exports.PING	.\ptypes.js	/^  PING: 5,$/;"	p
+module.exports.PULL_REQUEST	.\ptypes.js	/^  PULL_REQUEST: 13,$/;"	p
+module.exports.SYNC_REQUEST	.\ptypes.js	/^  SYNC_REQUEST: 9,$/;"	p
+module.exports.SYNC_RESPONSE	.\ptypes.js	/^  SYNC_RESPONSE: 10,$/;"	p
+packageError	.\core.js	/^function packageError(s) {$/;"	f
+packageWaitForBody	.\core.js	/^function packageWaitForBody(s) {$/;"	f
+packageWaitForHeader	.\core.js	/^function packageWaitForHeader(s) {$/;"	f
+packageWaitForHeader.endWriteStream	.\core.js	/^  function endWriteStream() {$/;"	f
+parent	.\dirwatcher.js	/^    var parent = require('path').dirname(dir);$/;"	v
+ping	.\core.js	/^function ping(timeout, ip, port) {$/;"	f
+s.afterLinkerStateChange	.\core.js	/^      s.afterLinkerStateChange = function (sold, snew) {$/;"	f
+settings	.\linkerpackage.js	/^  settings = require('.\/settings'),$/;"	v
+startDownload	.\synchandler.js	/^function startDownload(list, ip, port, session) {$/;"	f
+startDownload.newDownload	.\synchandler.js	/^    function newDownload() {$/;"	f
+timeCompare	.\dirwatcher.js	/^function timeCompare(t1, t2, range) {$/;"	f
+unwatch	.\dirwatcher.js	/^function unwatch(path) {$/;"	f
+unwatchAll	.\dirwatcher.js	/^function unwatchAll() {$/;"	f
+var.getObj	.\dirwatcher.js	/^  var getObj = function (key, value) {$/;"	f
+var.walk	.\dirwatcher.js	/^  var walk = function (list, map, currentPath) {$/;"	f
+waitForDeliverable	.\core.js	/^function waitForDeliverable(type, s) {$/;"	f
+watch	.\dirwatcher.js	/^function watch(path, onChangeCallback, onInitialized) {$/;"	f
+writePackage	.\core.js	/^function writePackage(head, body) {$/;"	f
+writePackage.writeBody	.\core.js	/^  function writeBody(body) {$/;"	f

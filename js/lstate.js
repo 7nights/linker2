@@ -12,7 +12,7 @@ var
     PTYPES      = require('./ptypes');
 
 /**
- * the this variable in following functions is
+ * the 'this' variable in following exports functions is
  * the socket which this state was binded to
  */
 
@@ -28,11 +28,14 @@ function changeState(ctx, sold, snew) {
     ctx.emit('lstatechange', sold, snew);
 }
 /**
- * change state to idle and after a random seconds(.2s ~ .7s), 
- * change state if socket.lstate is still idle.
+ * change ctx.lstate to idle and after a random seconds(.2s ~ .7s)
+ * change ctx.lstate to target state if socket.lstate is still idle.
  * This is because sometimes clients and server may block at the same time, and are both waiting
  * each other for response. lstates which may block should set a timeout when waiting for a package response.
  * In fact, just one side rolls back can solve the dead lock. So you can only do this on server side.
+ * A simple and final solution is one socket can have several lstates. However due to the 
+ * initial design did not take this needs into account, solving this problem by this way 
+ * may make me fail to finish my thesis.
  */
 var changeStateAfterTime = exports.changeStateAfterTime = function (ctx, target) {
     changeState(ctx, ctx.lstate, exports.idle);
@@ -196,13 +199,14 @@ exports.requestIPList = function *requestIPList() {
     );
 
     var pkg;
+    /* avoid dead lock */
     if (this.linker.server) {
         pkg = yield this.linker.pqueue.get(4000);
     } else {
         pkg = yield this.linker.pqueue.get(10000);
     }
     
-    if (pkg === null) {
+    if (pkg === null) { /* time out */
         changeStateAfterTime(this, exports.requestIPList);
         throw new Error('Timeout');
     }

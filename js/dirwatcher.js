@@ -240,11 +240,10 @@ function *compare(list1, list2, recordRemove, path) {
 
   var walk = function (list, map, currentPath) {
     if (list.constructor === Array) {
-      map[currentPath] = list[0];
+      // ignore dir
+      // map[currentPath] = list[0];
       for (var key in list[1]) {
-
         walk(list[1][key], map, require('path').join(currentPath, key));
-
       }
     } else if (typeof list === 'number') {
       map[currentPath] = list;
@@ -282,7 +281,6 @@ function *compare(list1, list2, recordRemove, path) {
     if (!(key in list2Map)) {
       rlt1[key] = '-' + list1Map[key];
       rlt2[key] = '+' + list1Map[key];
-
     } else if (timeCompare(list1Map[key], list2Map[key]) === 1) {
       delete list2Map[key];
       rlt2[key] = '~' + list1Map[key];

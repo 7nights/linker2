@@ -86,3 +86,35 @@ exports.timeCompare = function (t1, t2, range) {
   }
   return 0;
 };
+exports.mkdirpSync = function (p) {
+  var path = require('path');
+  var root = arguments[1];
+  if (!root) {
+    root = '';
+    try {
+      if (fs.statSync(p).isDirectory()) return true;
+    } catch (e) {}
+  }
+
+  p = path.normalize(p);
+  var cur = p.substr(0, p.indexOf(path.sep));
+  if (cur.length === 0) {
+    root = path.join(root, p);
+    p = '';
+  } else {
+    root = path.join(root, cur);
+    p = p.substr(p.indexOf(path.sep) + path.sep.length);
+  }
+
+  if (!fs.existsSync(root)) {
+    fs.mkdirSync(root);
+  } else {
+    var stat = fs.statSync(root);
+    if (!stat.isDirectory()) {
+      throw new Error('GivenPathIsNotADir');
+    }
+  }
+
+  if (p.length > 0)
+    exports.mkdirpSync(p, root);
+};

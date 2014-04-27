@@ -150,7 +150,8 @@ function startDownload(list, ip, port, session) {
  */
 var checkPath = exports.checkPath = function (p, isDir) {
     try {
-        if (path.relative(settings.get('syncFolder'), p) !== path.basename(p)) {
+        var relative = path.relative(settings.get('syncFolder'), p);
+        if (relative.indexOf(settings.get('syncFolder')) === 0 || relative[0] === '.' || relative === path.normalize(p)) {
             return new Error('SecurityError');
         }
 
@@ -230,6 +231,7 @@ exports.handleDownloadedFile = function (s, fileName) {
                 } else {
                     atime = fs.statSync(p).atime;
                 }
+                utils.mkdirpSync(path.dirname(p));
                 /* simply rewrite the file if downloaded file is newer than the local one.
                  * TODO: file backup should be done here
                  */

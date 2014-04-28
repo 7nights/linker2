@@ -49,7 +49,7 @@ exports.md5 = function (data, encoding) {
 exports.fileMd5 = function (p, callback, encoding, h) {
   var hash = h || crypto.createHash('md5');
   try {
-    fstream = fs.createReadStream(p);
+    var fstream = fs.createReadStream(p);
   } catch (e) {
     return callback(e);
   }
@@ -117,4 +117,8 @@ exports.mkdirpSync = function (p) {
 
   if (p.length > 0)
     exports.mkdirpSync(p, root);
+};
+exports.mkurl = function (p) {
+  if (require('path').sep === '\\') return p.replace(/\\/g, '/');
+  return p;
 };

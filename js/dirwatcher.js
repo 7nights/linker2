@@ -13,7 +13,10 @@ function timeCompare(t1, t2, range) {
   }
   return 0;
 };
-
+function mkurl(p) {
+  if (require('path').sep === '\\') return p.replace(/\\/g, '/');
+  return p;
+}
 /**
  * 获取目标文件夹的修改时间列表
  * @param {String} path 目标文件夹
@@ -193,7 +196,7 @@ ListHelper.prototype.
     }
     // step 3: look up items in listMap
     for (var i = 0, len = items.length; i < len; i++) {
-      name = items[i][0];
+      name = mkurl(items[i][0]);
       it = listMap.get(name);
       if (it === undefined) {
         toDownload.push(name);
